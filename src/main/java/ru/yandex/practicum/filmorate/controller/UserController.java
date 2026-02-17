@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InvalidIdException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validator.UserValidator;
-import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +18,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class UserController {
 
     private final Map<Long, User> users = new HashMap<>();
-    private final Validator<User> validator = new UserValidator();
     private final AtomicLong lastId = new AtomicLong();
 
     @GetMapping
@@ -29,12 +26,9 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        try {
-            validator.validate(user);
-        } catch (ValidationException e) {
-            log.warn("VALIDATION ERROR: {}", e.getMessage());
-            throw e;
+    public User create(@Valid @RequestBody User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
         user.setId(lastId.incrementAndGet());
         users.put(user.getId(), user);
@@ -43,25 +37,17 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody User newUser) {
-        try {
-            validator.validate(newUser);
-        } catch (ValidationException e) {
-            log.warn("UPDATE VALIDATION ERROR: {}", e.getMessage());
-            throw e;
-        }
-        if (newUser.getId() == null || !users.containsKey(newUser.getId())) {
+    public User update(@Valid @RequestBody User newUser) {
+        User oldUser = users.get(newUser.getId());
+        if (oldUser == null) {
             log.warn("INVALID ID: id={}", newUser.getId());
             throw new InvalidIdException();
         }
-        users.computeIfPresent(newUser.getId(), (id, oldUser) -> {
-            oldUser.setEmail(newUser.getEmail());
-            oldUser.setLogin(newUser.getLogin());
-            oldUser.setName(newUser.getName());
-            oldUser.setBirthday(newUser.getBirthday());
-            return oldUser;
-        });
+        oldUser.setEmail(newUser.getEmail());
+        oldUser.setLogin(newUser.getLogin());
+        oldUser.setName(newUser.getName() == null || newUser.getName().isBlank() ? newUser.getLogin() : newUser.getName());
+        oldUser.setBirthday(newUser.getBirthday());
         log.info("USER UPDATED: id={}, login={}", newUser.getId(), newUser.getLogin());
-        return users.get(newUser.getId());
+        return oldUser;
     }
 }
