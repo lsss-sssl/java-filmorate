@@ -1,50 +1,63 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.InvalidIdException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/films")
-@Slf4j
+@RequiredArgsConstructor
 public class FilmController {
+    private final FilmService filmService;
 
-    private final Map<Long, Film> films = new HashMap<>();
-    private final AtomicLong lasrId = new AtomicLong();
+    /**
+     *     GET    /films
+     *     GET    /films/{id}
+     *     GET    /films/popular?count={count}
+     *     POST   /films
+     *     PUT    /films
+     *     PUT    /films/{id}/like/{userId}
+     *     DELETE /films/{id}/like/{userId}
+     */
 
     @GetMapping
-    public Collection<Film> getFilms() {
-        return List.copyOf(films.values());
+    public List<Film> getAll() {
+        return filmService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public Film getById(@PathVariable final Long id) {
+        return filmService.getById(id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+        return filmService.getPopular(count);
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        film.setId(lasrId.incrementAndGet());
-        films.put(film.getId(), film);
-        log.info("FILM CREATED: id={}, name={}", film.getId(), film.getName());
-        return film;
+        return filmService.create(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film newFilm) {
-        Film oldFilm = films.get(newFilm.getId());
-        if (oldFilm == null) {
-            log.warn("INVALID ID: id={}", newFilm.getId());
-            throw new InvalidIdException();
-        }
-        oldFilm.setName(newFilm.getName());
-        oldFilm.setDescription(newFilm.getDescription());
-        oldFilm.setReleaseDate(newFilm.getReleaseDate());
-        oldFilm.setDuration(newFilm.getDuration());
-        log.info("FILM UPDATED: id={}, name={}", oldFilm.getId(), oldFilm.getName());
-        return oldFilm;
+        return filmService.update(newFilm);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void like(@PathVariable final Long id,
+                     @PathVariable final Long userId) {
+        filmService.like(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void dislike(@PathVariable final Long id,
+                        @PathVariable final Long userId) {
+        filmService.dislike(id, userId);
     }
 }
