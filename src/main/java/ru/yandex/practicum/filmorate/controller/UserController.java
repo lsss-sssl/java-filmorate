@@ -1,53 +1,70 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.InvalidIdException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/users")
-@Slf4j
+@RequiredArgsConstructor
 public class UserController {
+    private final UserService userService;
 
-    private final Map<Long, User> users = new HashMap<>();
-    private final AtomicLong lastId = new AtomicLong();
+    /**
+     *     GET    /users
+     *     GET    /users/{id}
+     *     GET    /users/{id}/friends
+     *     GET    /users/{id}/friends/common/{otherId}
+     *     POST   /users
+     *     PUT    /users
+     *     PUT    /users/{id}/friends/{friendId}
+     *     DELETE /users/{id}/friends/{friendId}
+     */
 
     @GetMapping
-    public Collection<User> getUsers() {
-        return List.copyOf(users.values());
+    public List<User> getUsers() {
+        return userService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public User getById(@PathVariable final Long id) {
+        return userService.getById(id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getFriendsById(@PathVariable final Long id) {
+        return userService.getFriendsById(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable final Long id,
+                                       @PathVariable final Long otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        user.setId(lastId.incrementAndGet());
-        users.put(user.getId(), user);
-        log.info("USER CREATED: id={}, login={}", user.getId(), user.getLogin());
-        return user;
+    public User create(@Valid @RequestBody User newUser) {
+        return userService.create(newUser);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User newUser) {
-        User oldUser = users.get(newUser.getId());
-        if (oldUser == null) {
-            log.warn("INVALID ID: id={}", newUser.getId());
-            throw new InvalidIdException();
-        }
-        oldUser.setEmail(newUser.getEmail());
-        oldUser.setLogin(newUser.getLogin());
-        oldUser.setName(newUser.getName() == null || newUser.getName().isBlank() ? newUser.getLogin() : newUser.getName());
-        oldUser.setBirthday(newUser.getBirthday());
-        log.info("USER UPDATED: id={}, login={}", newUser.getId(), newUser.getLogin());
-        return oldUser;
+        return userService.update(newUser);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void makeFriend(@PathVariable final Long id,
+                           @PathVariable final Long friendId) {
+        userService.makeFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable final Long id,
+                             @PathVariable final Long friendId) {
+        userService.removeFriend(id, friendId);
     }
 }
