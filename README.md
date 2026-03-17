@@ -13,14 +13,14 @@ FROM users;
 ```sql
 SELECT *
 FROM users
-WHERE id = ?;
+WHERE id = 1;
 ```
 ### Получить список друзей пользователя.
 ```sql
 SELECT u.*
 FROM users u
 JOIN friendships f ON u.id = f.friend_id
-WHERE f.user_id = ?;
+WHERE f.user_id = 1;
 ```
 ### Получить общих друзей.
 ```sql
@@ -28,8 +28,8 @@ SELECT u.*
 FROM users u
 JOIN friendships f1 ON u.id = f1.friend_id
 JOIN friendships f2 ON u.id = f2.friend_id
-WHERE f1.user_id = ?
-AND f2.user_id = ?;
+WHERE f1.user_id = 1
+AND f2.user_id = 2;
 ```
 ### Получить все фильмы.
 ```sql
@@ -40,7 +40,7 @@ FROM films;
 ```sql
 SELECT *
 FROM films
-WHERE id = ?;
+WHERE id = 1;
 ```
 ### Получить популярные фильмы.
 ```sql
@@ -50,5 +50,5 @@ FROM films f
 LEFT JOIN film_likes fl ON f.id = fl.film_id
 GROUP BY f.id
 ORDER BY likes DESC
-LIMIT ?;
+LIMIT 10;
 ```
