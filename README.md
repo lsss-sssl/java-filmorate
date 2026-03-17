@@ -7,7 +7,48 @@
 ### Получить всех пользователей.
 ```sql
 SELECT *
-FROM users;```
-### Запрос 2
-### Запрос 3
-### Запрос 4
+FROM users;
+```
+### Получить пользователя по id.
+```sql
+SELECT *
+FROM users
+WHERE id = ?;
+```
+### Получить список друзей пользователя.
+```sql
+SELECT u.*
+FROM users u
+JOIN friendships f ON u.id = f.friend_id
+WHERE f.user_id = ?;
+```
+### Получить общих друзей.
+```sql
+SELECT u.*
+FROM users u
+JOIN friendships f1 ON u.id = f1.friend_id
+JOIN friendships f2 ON u.id = f2.friend_id
+WHERE f1.user_id = ?
+AND f2.user_id = ?;
+```
+### Получить все фильмы.
+```sql
+SELECT *
+FROM films;
+```
+### Получить фильм по id.
+```sql
+SELECT *
+FROM films
+WHERE id = ?;
+```
+### Получить популярные фильмы.
+```sql
+SELECT f.*,
+       COUNT(fl.user_id) AS likes
+FROM films f
+LEFT JOIN film_likes fl ON f.id = fl.film_id
+GROUP BY f.id
+ORDER BY likes DESC
+LIMIT ?;
+```
