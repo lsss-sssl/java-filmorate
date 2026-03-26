@@ -1,15 +1,15 @@
-package ru.yandex.practicum.filmorate.validator;
+package ru.yandex.practicum.filmorate.validation.nospace;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = ReleaseDateValidator.class)
+@Constraint(validatedBy = NoSpacesValidator.class)
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ReleaseDate {
-    String message() default "Дата релиза не может быть раньше 28.12.1895";
+public @interface NoSpaces {
+    String message() default "Поле не должно содержать пробелов";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
