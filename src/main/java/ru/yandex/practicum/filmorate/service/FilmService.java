@@ -62,29 +62,29 @@ public class FilmService {
         return oldFilm;
     }
 
-    public void like(final Long filmId, final Long userId) {
-        Film film = filmStorage.findById(filmId);
-        if (film == null) {
-            throw new NotFoundException("Film not found");
-        }
-        User user = userStorage.findById(userId);
-        if (user == null) {
-            throw new NotFoundException("User not found");
-        }
-        film.getLikes().add(userId);
-        log.info("FILM LIKED: filmId={}, UserId={}", filmId, userId);
-    }
+//    public void like(final Long filmId, final Long userId) {
+//        Film film = filmStorage.findById(filmId);
+//        if (film == null) {
+//            throw new NotFoundException("Film not found");
+//        }
+//        User user = userStorage.findById(userId);
+//        if (user == null) {
+//            throw new NotFoundException("User not found");
+//        }
+//        film.getLikes().add(userId);
+//        log.info("FILM LIKED: filmId={}, UserId={}", filmId, userId);
+//    }
 
-    public void dislike(final Long filmId, final Long userId) {
-        Film film = filmStorage.findById(filmId);
-        if (film == null) {
-            throw new NotFoundException("Film not found");
-        }
-        User user = userStorage.findById(userId);
-        if (user == null) {
-            throw new NotFoundException("User not found");
-        }
-        film.getLikes().remove(userId);
-        log.info("FILM DISLIKED: filmId={}, UserId={}", filmId, userId);
-    }
+//    public void dislike(final Long filmId, final Long userId) {
+//        Film film = filmStorage.findById(filmId);
+//        if (film == null) {
+//            throw new NotFoundException("Film not found");
+//        }
+//        User user = userStorage.findById(userId);
+//        if (user == null) {
+//            throw new NotFoundException("User not found");
+//        }
+//        film.getLikes().remove(userId);
+//        log.info("FILM DISLIKED: filmId={}, UserId={}", filmId, userId);
+//    }
 }

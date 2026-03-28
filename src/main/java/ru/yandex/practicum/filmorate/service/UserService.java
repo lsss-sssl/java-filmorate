@@ -3,11 +3,19 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.filmorate.dto.NewUserRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.user.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.userStorage.UserStorage;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -15,71 +23,75 @@ import java.util.List;
 public class UserService {
     private final UserStorage userStorage;
 
-    public List<User> getAll() {
-        return userStorage.findAll();
+    public List<UserDto> getAll() {
+        return userStorage.findAll().stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toList());
     }
 
-    public User getById(final Long id) {
-        User user = userStorage.findById(id);
-        if (user == null) {
-            throw new NotFoundException("Film not found");
+    public UserDto getById(final Long userId) {
+        return UserMapper.mapToUserDto(findByIdOrThrow(userId));
+    }
+
+    public List<UserDto> getFriendsById(final long userId) {
+        findByIdOrThrow(userId);
+        return userStorage.findFriendsById(userId).stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserDto> getCommonFriends(final Long userId, final Long friendId) {
+        findByIdOrThrow(userId);
+        findByIdOrThrow(friendId);
+        return userStorage.findCommonFriendsById(userId, friendId).stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public UserDto create(NewUserRequest request) {
+        User user = UserMapper.mapToUser(request);
+        return UserMapper.mapToUserDto(userStorage.save(user));
+    }
+
+    public UserDto update(UpdateUserRequest request) {
+        User oldUser = findByIdOrThrow(request.getId());
+        UserMapper.updateUserFields(oldUser, request);
+        userStorage.update(oldUser);
+        return UserMapper.mapToUserDto(oldUser);
+    }
+
+    @Transactional
+    public void addFriend(final long userId, final long friendId) {
+        findByIdOrThrow(userId);
+        findByIdOrThrow(friendId);
+        Optional<Long> userToFriendStatus = userStorage.findFriendshipStatus(userId, friendId);
+        Optional<Long> friendToUserStatus = userStorage.findFriendshipStatus(friendId, userId);
+        if (userToFriendStatus.isPresent()) {
+            return;
         }
-        return user;
-    }
-
-    public List<User> getFriendsById(final Long userId) {
-        User user = userStorage.findById(userId);
-        if (user == null) {
-            throw new NotFoundException("Film not found");
+        if (friendToUserStatus.isPresent() && friendToUserStatus.get() == FriendshipStatus.UNCONFIRMED.getId()) {
+            userStorage.classifyFriendship(userId, friendId, FriendshipStatus.CONFIRMED);
+            userStorage.classifyFriendship(friendId, userId, FriendshipStatus.CONFIRMED);
+        } else {
+            userStorage.classifyFriendship(userId, friendId, FriendshipStatus.UNCONFIRMED);
         }
-        List<User> friends = user.getFriends().stream()
-                .map(userStorage::findById)
-                .toList();
-        log.info("FOUND FRIENDS: userId={}, friendsIds={}", userId, friends.stream()
-                .map(User::getId)
-                .toList());
-        return friends;
     }
 
-    public List<User> getCommonFriends(final Long id, final Long otherId) {
-        User user = getById(id);
-        User other = getById(otherId);
-
-        return user.getFriends().stream()
-                .filter(other.getFriends()::contains)
-                .map(this::getById)
-                .toList();
-    }
-
-    public User create(final User newUser) {
-        User user = userStorage.add(newUser);
-        log.info("USER CREATED: id={}, login={}", user.getId(), user.getLogin());
-        return user;
-    }
-
-    public User update(User newUser) {
-        User oldUser = userStorage.findById(newUser.getId());
-
-        if (oldUser == null) {
-            log.warn("INVALID ID: id={}", newUser.getId());
-            throw new NotFoundException("User not found");
+    @Transactional
+    public void removeFriend(final long userId, final long friendId) {
+        findByIdOrThrow(userId);
+        findByIdOrThrow(friendId);
+        Optional<Long> userToFriendStatus = userStorage.findFriendshipStatus(userId, friendId);
+        if (userToFriendStatus.isEmpty()) {
+            return;
         }
-        oldUser.setEmail(newUser.getEmail());
-        oldUser.setLogin(newUser.getLogin());
-        oldUser.setName(newUser.getName() == null || newUser.getName().isBlank() ? newUser.getLogin() : newUser.getName());
-        oldUser.setBirthday(newUser.getBirthday());
-        log.info("USER UPDATED: id={}, login={}", newUser.getId(), newUser.getLogin());
-        return oldUser;
+        if (userToFriendStatus.get() == FriendshipStatus.CONFIRMED.getId()) {
+            userStorage.classifyFriendship(friendId, userId, FriendshipStatus.UNCONFIRMED);
+        }
+        userStorage.endFriendship(userId, friendId);
     }
 
-
-    public void makeFriend(final Long id, final Long friendId) {
-        getById(id).getFriends().add(friendId);
-        getById(friendId).getFriends().add(id);
-    }
-
-    public void removeFriend(final Long id, final Long friendId) {
-        getById(id).getFriends().remove(friendId);
-        getById(friendId).getFriends().remove(id);
+    private User findByIdOrThrow(final long userId) {
+        return userStorage.findById(userId).orElseThrow(() -> new NotFoundException("User not found by id=" + userId));
     }
 }

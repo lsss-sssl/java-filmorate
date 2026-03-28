@@ -49,15 +49,15 @@ public class FilmController {
         return filmService.update(newFilm);
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public void like(@PathVariable final Long id,
-                     @PathVariable final Long userId) {
-        filmService.like(id, userId);
-    }
-
-    @DeleteMapping("/{id}/like/{userId}")
-    public void dislike(@PathVariable final Long id,
-                        @PathVariable final Long userId) {
-        filmService.dislike(id, userId);
-    }
+//    @PutMapping("/{id}/like/{userId}")
+//    public void like(@PathVariable final Long id,
+//                     @PathVariable final Long userId) {
+//        filmService.like(id, userId);
+//    }
+//
+//    @DeleteMapping("/{id}/like/{userId}")
+//    public void dislike(@PathVariable final Long id,
+//                        @PathVariable final Long userId) {
+//        filmService.dislike(id, userId);
+//    }
 }

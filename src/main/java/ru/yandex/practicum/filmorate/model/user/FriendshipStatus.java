@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.model.user;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Data
-public class FriendshipStatus {
-    private Long id;
-    @NotBlank(message = "Название не может быть пустым")
-    private String name;
+@Getter
+@RequiredArgsConstructor
+public enum FriendshipStatus {
+    CONFIRMED(1),
+    UNCONFIRMED(2);
+
+    private final long id;
 }
