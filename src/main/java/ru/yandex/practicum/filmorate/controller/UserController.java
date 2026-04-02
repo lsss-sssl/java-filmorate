@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.NewUserRequest;
-import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
-import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class UserController {
 
     @GetMapping("/{id}/friends/common/{friendId}")
     public List<UserDto> getCommonFriends(@PathVariable final long id,
-                                       @PathVariable final Long friendId) {
+                                          @PathVariable final Long friendId) {
         return userService.getCommonFriends(id, friendId);
     }
 

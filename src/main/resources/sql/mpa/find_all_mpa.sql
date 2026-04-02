@@ -1,0 +1,3 @@
+SELECT *
+FROM mpa
+ORDER BY id;

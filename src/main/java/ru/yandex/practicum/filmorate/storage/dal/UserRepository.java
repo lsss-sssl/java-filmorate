@@ -5,9 +5,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.user.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.user.User;
-import ru.yandex.practicum.filmorate.storage.userStorage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.util.FriendsSql;
 import ru.yandex.practicum.filmorate.util.SqlLoader;
-import ru.yandex.practicum.filmorate.util.UserSql;
+import ru.yandex.practicum.filmorate.util.UsersSql;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +22,13 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
 
     @Override
     public List<User> findAll() {
-        return findMany(sql.load(UserSql.FIND_ALL));
+        return findMany(sql.load(UsersSql.FIND_ALL));
     }
 
     @Override
     public Optional<User> findById(long userId) {
         return findOne(
-                sql.load(UserSql.FIND_BY_ID),
+                sql.load(UsersSql.FIND_BY_ID),
                 userId
         );
     }
@@ -35,7 +36,7 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
     @Override
     public List<User> findFriendsById(long userId) {
         return findMany(
-                sql.load(UserSql.FIND_FRIENDS_BY_ID),
+                sql.load(FriendsSql.FIND_FRIENDS_BY_ID),
                 userId
         );
     }
@@ -43,7 +44,7 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
     @Override
     public List<User> findCommonFriendsById(long userId, final long friendId) {
         return findMany(
-                sql.load(UserSql.FIND_COMMON_FRIENDS),
+                sql.load(FriendsSql.FIND_COMMON_FRIENDS),
                 userId,
                 friendId
         );
@@ -52,7 +53,7 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
     @Override
     public User save(User user) {
         long id = insert(
-                sql.load(UserSql.CREATE),
+                sql.load(UsersSql.CREATE),
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -65,7 +66,7 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
     @Override
     public User update(User user) {
         update(
-                sql.load(UserSql.UPDATE),
+                sql.load(UsersSql.UPDATE),
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -78,7 +79,7 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
     @Override
     public void classifyFriendship(long userId, long friendId, FriendshipStatus status) {
         update(
-                sql.load(UserSql.CREATE_FRIENDSHIP),
+                sql.load(FriendsSql.CREATE_FRIENDSHIP),
                 userId,
                 friendId,
                 status.getId()
@@ -88,7 +89,7 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
     @Override
     public void endFriendship(long userId, long friendId) {
         update(
-                sql.load(UserSql.DELETE_FRIENDSHIP),
+                sql.load(FriendsSql.DELETE_FRIENDSHIP),
                 userId,
                 friendId
         );
@@ -97,7 +98,7 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
     @Override
     public Optional<Long> findFriendshipStatus(long userId, long friendId) {
         return jdbc.query(
-                sql.load(UserSql.FIND_FRIENDSHIP_STATUS),
+                sql.load(FriendsSql.FIND_FRIENDSHIP_STATUS),
                 (rs, rowNum) -> rs.getLong("status_id"),
                 userId,
                 friendId
