@@ -14,4 +14,3 @@ public final class MpaMapper {
         return dto;
     }
 }
-

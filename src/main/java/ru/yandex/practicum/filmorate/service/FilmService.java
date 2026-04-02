@@ -52,17 +52,21 @@ public class FilmService {
 
     public void like(final long filmId, final long userId) {
         findByIdOrThrow(filmId);
-        userStorage.findById(userId);
+        ensureUserExists(userId);
         filmStorage.addLike(filmId, userId);
     }
 
     public void dislike(final long filmId, final long userId) {
         findByIdOrThrow(filmId);
-        userStorage.findById(userId);
+        ensureUserExists(userId);
         filmStorage.deleteLike(filmId, userId);
     }
 
     private Film findByIdOrThrow(final long filmId) {
         return filmStorage.findById(filmId).orElseThrow(() -> new NotFoundException("Film not found by id=" + filmId));
+    }
+
+    private void ensureUserExists(final long userId) {
+        userStorage.findById(userId).orElseThrow(() -> new NotFoundException("User not found by id=" + userId));
     }
 }
