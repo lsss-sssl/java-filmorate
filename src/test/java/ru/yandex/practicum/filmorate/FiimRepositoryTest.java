@@ -99,7 +99,7 @@ public class FiimRepositoryTest {
 
     @Test
     void shouldAddAndDeleteLike() {
-        User user = userRepository.save(makeUser("film-like-user@mail.com", "filmLikeUser"));
+        User user = userRepository.save(makeUser("film-like-user@example.com", "filmLikeUser"));
         Film film = filmRepository.save(makeFilm("Film 5", Mpa.PG, Set.of()));
         filmRepository.addLike(film.getId(), user.getId());
         List<Film> popularAfterLike = filmRepository.findPopular(10);
@@ -111,9 +111,9 @@ public class FiimRepositoryTest {
 
     @Test
     void shouldFindPopularFilmsOrderedByLikes() {
-        User user1 = userRepository.save(makeUser("popular1@mail.com", "popular1"));
-        User user2 = userRepository.save(makeUser("popular2@mail.com", "popular2"));
-        User user3 = userRepository.save(makeUser("popular3@mail.com", "popular3"));
+        User user1 = userRepository.save(makeUser("popular1@example.com", "popular1"));
+        User user2 = userRepository.save(makeUser("popular2@example.com", "popular2"));
+        User user3 = userRepository.save(makeUser("popular3@example.com", "popular3"));
         Film film1 = filmRepository.save(makeFilm("Popular 1", Mpa.G, Set.of()));
         Film film2 = filmRepository.save(makeFilm("Popular 2", Mpa.G, Set.of()));
         Film film3 = filmRepository.save(makeFilm("Popular 3", Mpa.G, Set.of()));
