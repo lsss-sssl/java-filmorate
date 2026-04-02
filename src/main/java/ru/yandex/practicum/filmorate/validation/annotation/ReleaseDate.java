@@ -1,7 +1,9 @@
-package ru.yandex.practicum.filmorate.validation.releasedate;
+package ru.yandex.practicum.filmorate.validation.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import ru.yandex.practicum.filmorate.validation.validator.ReleaseDateValidator;
+
 import java.lang.annotation.*;
 
 @Documented

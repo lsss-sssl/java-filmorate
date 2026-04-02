@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.util;
+package ru.yandex.practicum.filmorate.storage.dal.sql;
 
 public final class GenreSql {
     public static final String CREATE = "sql/genres/set_genre.sql";

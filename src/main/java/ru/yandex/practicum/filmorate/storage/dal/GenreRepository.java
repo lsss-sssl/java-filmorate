@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.storage.dal;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.film.Genre;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
-import ru.yandex.practicum.filmorate.util.GenreSql;
+import ru.yandex.practicum.filmorate.storage.dal.sql.GenreSql;
 import ru.yandex.practicum.filmorate.util.SqlLoader;
 
 import java.util.List;

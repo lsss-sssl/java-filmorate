@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
-import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -23,43 +23,55 @@ public class FilmService {
     private final UserStorage userStorage;
 
     public List<FilmDto> getAll() {
+        log.debug("Request to get all films");
         return filmStorage.findAll().stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public FilmDto getById(final long filmId) {
+        log.debug("Request to get film by id={}", filmId);
         return FilmMapper.mapToFilmDto(findByIdOrThrow(filmId));
     }
 
     public List<FilmDto> getPopular(final int count) {
+        log.debug("Request to get popular films, count={}", count);
         return filmStorage.findPopular(count).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public FilmDto create(NewFilmRequest request) {
+        log.info("Creating film: name={}, releaseDate={}", request.getName(), request.getReleaseDate());
         Film film = FilmMapper.mapToFilm(request);
-        return FilmMapper.mapToFilmDto(filmStorage.save(film));
+        FilmDto filmDto = FilmMapper.mapToFilmDto(filmStorage.save(film));
+        log.info("Film created: id={}", filmDto.getId());
+        return filmDto;
     }
 
     public FilmDto update(UpdateFilmRequest request) {
+        log.info("Updating film: id={}", request.getId());
         Film oldFilm = findByIdOrThrow(request.getId());
         FilmMapper.updateFilmFields(oldFilm, request);
         filmStorage.update(oldFilm);
+        log.info("Film updated: id={}", oldFilm.getId());
         return FilmMapper.mapToFilmDto(oldFilm);
     }
 
     public void like(final long filmId, final long userId) {
+        log.info("Adding like: filmId={}, userId={}", filmId, userId);
         findByIdOrThrow(filmId);
         ensureUserExists(userId);
         filmStorage.addLike(filmId, userId);
+        log.info("Like added: filmId={}, userId={}", filmId, userId);
     }
 
     public void dislike(final long filmId, final long userId) {
+        log.info("Removing like: filmId={}, userId={}", filmId, userId);
         findByIdOrThrow(filmId);
         ensureUserExists(userId);
         filmStorage.deleteLike(filmId, userId);
+        log.info("Like removed: filmId={}, userId={}", filmId, userId);
     }
 
     private Film findByIdOrThrow(final long filmId) {

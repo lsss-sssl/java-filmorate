@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @Component
-public class SqlLoader {
+public final class SqlLoader {
     public String load(String path) {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
             if (is == null) {

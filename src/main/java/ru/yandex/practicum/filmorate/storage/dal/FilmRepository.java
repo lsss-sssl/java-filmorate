@@ -3,12 +3,12 @@ package ru.yandex.practicum.filmorate.storage.dal;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.film.Film;
-import ru.yandex.practicum.filmorate.model.film.Genre;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.util.FilmsSql;
-import ru.yandex.practicum.filmorate.util.GenreSql;
-import ru.yandex.practicum.filmorate.util.LikesSql;
+import ru.yandex.practicum.filmorate.storage.dal.sql.FilmsSql;
+import ru.yandex.practicum.filmorate.storage.dal.sql.GenreSql;
+import ru.yandex.practicum.filmorate.storage.dal.sql.LikesSql;
 import ru.yandex.practicum.filmorate.util.SqlLoader;
 
 import java.util.HashSet;

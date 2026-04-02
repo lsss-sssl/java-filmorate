@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class FilmDto {
+public final class FilmDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     private String name;

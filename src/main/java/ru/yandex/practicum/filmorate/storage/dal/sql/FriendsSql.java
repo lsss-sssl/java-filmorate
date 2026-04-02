@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.util;
+package ru.yandex.practicum.filmorate.storage.dal.sql;
 
 public final class FriendsSql {
     public static final String FIND_FRIENDS_BY_ID = "sql/friends/find_friends_by_id.sql";

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.util;
+package ru.yandex.practicum.filmorate.storage.dal.sql;
 
 public final class UsersSql {
     public static final String FIND_ALL = "sql/users/find_all_users.sql";

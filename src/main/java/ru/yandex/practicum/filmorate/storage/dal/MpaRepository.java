@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.storage.dal;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.film.Mpa;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
-import ru.yandex.practicum.filmorate.util.MpaSql;
+import ru.yandex.practicum.filmorate.storage.dal.sql.MpaSql;
 import ru.yandex.practicum.filmorate.util.SqlLoader;
 
 import java.util.List;

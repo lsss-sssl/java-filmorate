@@ -3,12 +3,12 @@ package ru.yandex.practicum.filmorate.storage.dal;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.user.FriendshipStatus;
-import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.model.FriendshipStatus;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.util.FriendsSql;
+import ru.yandex.practicum.filmorate.storage.dal.sql.FriendsSql;
 import ru.yandex.practicum.filmorate.util.SqlLoader;
-import ru.yandex.practicum.filmorate.util.UsersSql;
+import ru.yandex.practicum.filmorate.storage.dal.sql.UsersSql;
 
 import java.util.List;
 import java.util.Optional;

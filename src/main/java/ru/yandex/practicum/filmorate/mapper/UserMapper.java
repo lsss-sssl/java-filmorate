@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
-import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.model.User;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UserMapper {

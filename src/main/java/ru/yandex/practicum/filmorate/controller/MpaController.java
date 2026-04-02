@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/mpa")
 @RequiredArgsConstructor
-public class MpaController {
+public final class MpaController {
     private final MpaService mpaService;
 
     /**

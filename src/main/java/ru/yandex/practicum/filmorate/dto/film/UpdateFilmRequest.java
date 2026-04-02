@@ -4,15 +4,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.model.film.Genre;
-import ru.yandex.practicum.filmorate.model.film.Mpa;
-import ru.yandex.practicum.filmorate.validation.releasedate.ReleaseDate;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.validation.annotation.ReleaseDate;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Data
-public class UpdateFilmRequest {
+public final class UpdateFilmRequest {
     private Long id;
     @NotBlank(message = "Название не может быть пустым")
     private String name;
