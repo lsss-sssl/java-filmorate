@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage.dal;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -11,31 +13,32 @@ import ru.yandex.practicum.filmorate.storage.dal.sql.GenreSql;
 import ru.yandex.practicum.filmorate.storage.dal.sql.LikesSql;
 import ru.yandex.practicum.filmorate.util.SqlLoader;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class FilmRepository extends BaseRepository<Film> implements FilmStorage {
+    private final NamedParameterJdbcTemplate namedJdbc;
 
-    public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper, SqlLoader sql) {
+    public FilmRepository(
+            JdbcTemplate jdbc,
+            RowMapper<Film> mapper,
+            SqlLoader sql,
+            NamedParameterJdbcTemplate namedJdbc) {
         super(jdbc, mapper, sql);
+        this.namedJdbc = namedJdbc;
     }
 
     @Override
     public List<Film> findAll() {
         List<Film> films = findMany(sql.load(FilmsSql.FIND_ALL));
-        for (Film film : films) {
-            film.setGenres(getGenres(film.getId()));
-        }
+        loadGenres(films);
         return films;
     }
 
     @Override
     public Optional<Film> findById(long filmId) {
         Optional<Film> film = findOne(sql.load(FilmsSql.FIND_BY_ID), filmId);
-        film.ifPresent(f -> f.setGenres(getGenres(f.getId())));
+        film.ifPresent(f -> f.setGenres(loadGenres(filmId)));
         return film;
     }
 
@@ -90,9 +93,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     @Override
     public List<Film> findPopular(long count) {
         List<Film> films = findMany(sql.load(FilmsSql.FIND_POPULAR), count);
-        for (Film film : films) {
-            film.setGenres(getGenres(film.getId()));
-        }
+        loadGenres(films);
         return films;
     }
 
@@ -101,19 +102,42 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                 sql.load(GenreSql.DELETE_BY_ID),
                 film.getId()
         );
-        if (film.getGenres() == null || film.getGenres().isEmpty()) {
-            return;
-        }
-        for (Genre genre : film.getGenres()) {
-            update(sql.load(GenreSql.CREATE), film.getId(), genre.getId());
-        }
+        if (film.getGenres() == null || film.getGenres().isEmpty()) return;
+        jdbc.batchUpdate(
+                sql.load(GenreSql.CREATE),
+                film.getGenres(),
+                film.getGenres().size(),
+                (ps, genre) -> {
+                    ps.setLong(1, film.getId());
+                    ps.setLong(2, genre.getId());
+                }
+        );
     }
 
-    private Set<Genre> getGenres(long filmId) {
+    private Set<Genre> loadGenres(long filmId) {
         return new HashSet<>(jdbc.query(
                 sql.load(FilmsSql.FIND_GENRES_BY_ID),
                 (rs, rowNum) -> Genre.fromId(rs.getLong("genre_id")),
                 filmId
         ));
+    }
+
+    private void loadGenres(List<Film> films) {
+        if (films.isEmpty()) return;
+        List<Long> filmIds = films.stream().map(Film::getId).toList();
+        Map<Long, Set<Genre>> genresByFilmId = new HashMap<>();
+        namedJdbc.query(
+                sql.load(FilmsSql.FIND_GENRES_BY_FILM_IDS),
+                new MapSqlParameterSource("filmIds", filmIds),
+                rs -> {
+            long filmId = rs.getLong("film_id");
+            long genreId = rs.getLong("genre_id");
+            genresByFilmId
+                    .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
+                    .add(Genre.fromId(genreId));
+        });
+        for (Film film : films) {
+            film.setGenres(genresByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
+        }
     }
 }
