@@ -1,0 +1,3 @@
+SELECT *
+FROM films
+ORDER BY id;

@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
+import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 @RequiredArgsConstructor
-public class FilmController {
+public final class FilmController {
     private final FilmService filmService;
 
     /**
@@ -20,44 +22,44 @@ public class FilmController {
      *     GET    /films/popular?count={count}
      *     POST   /films
      *     PUT    /films
-     *     PUT    /films/{id}/like/{userId}
-     *     DELETE /films/{id}/like/{userId}
+     *     PUT    /films/{filmId}/like/{userId}
+     *     DELETE /films/{filmId}/like/{userId}
      */
 
     @GetMapping
-    public List<Film> getAll() {
+    public List<FilmDto> getAll() {
         return filmService.getAll();
     }
 
     @GetMapping("/{id}")
-    public Film getById(@PathVariable final Long id) {
+    public FilmDto getById(@PathVariable long id) {
         return filmService.getById(id);
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+    public List<FilmDto> getPopular(@RequestParam(defaultValue = "10") int count) {
         return filmService.getPopular(count);
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        return filmService.create(film);
+    public FilmDto create(@Valid @RequestBody NewFilmRequest request) {
+        return filmService.create(request);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
-        return filmService.update(newFilm);
+    public FilmDto update(@Valid @RequestBody UpdateFilmRequest request) {
+        return filmService.update(request);
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public void like(@PathVariable final Long id,
-                     @PathVariable final Long userId) {
-        filmService.like(id, userId);
+    @PutMapping("/{filmId}/like/{userId}")
+    public void like(@PathVariable final long filmId,
+                     @PathVariable final long userId) {
+        filmService.like(filmId, userId);
     }
 
-    @DeleteMapping("/{id}/like/{userId}")
-    public void dislike(@PathVariable final Long id,
-                        @PathVariable final Long userId) {
-        filmService.dislike(id, userId);
+    @DeleteMapping("/{filmId}/like/{userId}")
+    public void dislike(@PathVariable final long filmId,
+                        @PathVariable final long userId) {
+        filmService.dislike(filmId, userId);
     }
 }
