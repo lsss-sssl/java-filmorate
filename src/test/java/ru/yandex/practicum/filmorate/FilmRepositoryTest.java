@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         SqlLoader.class
 })
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class FiimRepositoryTest {
+public class FilmRepositoryTest {
     private final FilmRepository filmRepository;
     private final UserRepository userRepository;
 

@@ -16,6 +16,10 @@ import java.util.List;
 public final class UserController {
     private final UserService userService;
 
+// TODO:   GET    /users/{id}/recommendations
+//         GET    /users/{id}/feed
+//         DELETE /users/{userId}
+
     /**
      *     GET    /users
      *     GET    /users/{id}
