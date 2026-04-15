@@ -152,4 +152,9 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
             film.setGenres(genresByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
         }
     }
+
+    @Override
+    public void deleteById(long filmId) {
+        update(sql.load(FilmsSql.DELETE_BY_ID), filmId);
+    }
 }
