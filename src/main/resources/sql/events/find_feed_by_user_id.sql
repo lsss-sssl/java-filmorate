@@ -6,4 +6,4 @@ SELECT id,
        entity_id
 FROM events
 WHERE user_id = ?
-ORDER BY id DESC;
+ORDER BY id;
