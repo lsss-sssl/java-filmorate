@@ -67,10 +67,17 @@ public class EventRepositoryTest {
         List<Event> feed = eventRepository.findFeedByUserId(user.getId());
 
         assertThat(feed.size()).isEqualTo(2);
-        assertThat(feed.getFirst().getEventId()).isEqualTo(e2.getEventId());
+
+        assertThat(feed.getFirst().getEventId()).isEqualTo(e1.getEventId());
         assertThat(feed.getFirst().getUserId()).isEqualTo(user.getId());
-        assertThat(feed.getFirst().getEventType()).isEqualTo("FRIEND");
+        assertThat(feed.getFirst().getEventType()).isEqualTo("LIKE");
         assertThat(feed.getFirst().getOperation()).isEqualTo("ADD");
-        assertThat(feed.getFirst().getEntityId()).isEqualTo(20L);
+        assertThat(feed.getFirst().getEntityId()).isEqualTo(10L);
+
+        assertThat(feed.get(1).getEventId()).isEqualTo(e2.getEventId());
+        assertThat(feed.get(1).getUserId()).isEqualTo(user.getId());
+        assertThat(feed.get(1).getEventType()).isEqualTo("FRIEND");
+        assertThat(feed.get(1).getOperation()).isEqualTo("ADD");
+        assertThat(feed.get(1).getEntityId()).isEqualTo(20L);
     }
 }
