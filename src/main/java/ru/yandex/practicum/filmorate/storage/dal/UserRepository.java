@@ -104,4 +104,9 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
                 friendId
         ).stream().findFirst();
     }
+
+    @Override
+    public void deleteById(long userId) {
+        jdbc.update("DELETE FROM users WHERE id = ?", userId);
+    }
 }
