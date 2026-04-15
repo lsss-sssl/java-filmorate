@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
@@ -16,8 +17,7 @@ import java.util.List;
 public final class UserController {
     private final UserService userService;
 
-// TODO:   GET    /users/{id}/recommendations
-//         GET    /users/{id}/feed
+// TODO:   GET    /users/{id}/feed
 //         DELETE /users/{userId}
 
     /**
@@ -39,6 +39,11 @@ public final class UserController {
     @GetMapping("/{id}")
     public UserDto getById(@PathVariable final long id) {
         return userService.getById(id);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<FilmDto> getRecommendations(@PathVariable final long id) {
+        return userService.getRecommendations(id);
     }
 
     @GetMapping("/{id}/friends")
