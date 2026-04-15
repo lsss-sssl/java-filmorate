@@ -107,6 +107,6 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
 
     @Override
     public void deleteById(long userId) {
-        jdbc.update("DELETE FROM users WHERE id = ?", userId);
+        update(sql.load(UsersSql.DELETE_BY_ID), userId);
     }
 }

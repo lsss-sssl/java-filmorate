@@ -143,6 +143,6 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
 
     @Override
     public void deleteById(long filmId) {
-        jdbc.update("DELETE FROM films WHERE id = ?", filmId);
+        update(sql.load(FilmsSql.DELETE_BY_ID), filmId);
     }
 }
