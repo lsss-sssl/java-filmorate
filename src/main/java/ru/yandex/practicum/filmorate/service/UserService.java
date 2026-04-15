@@ -4,13 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
@@ -22,6 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     public List<UserDto> getAll() {
         log.debug("Request to get all users");
@@ -33,6 +37,14 @@ public class UserService {
     public UserDto getById(final long userId) {
         log.debug("Request to get user by id={}", userId);
         return UserMapper.mapToUserDto(findByIdOrThrow(userId));
+    }
+
+    public List<FilmDto> getRecommendations(final long userId) {
+        log.debug("Request to get recommendations by userId={}", userId);
+        findByIdOrThrow(userId);
+        return filmStorage.findRecommendationsByUserId(userId).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
     }
 
     public List<UserDto> getFriendsById(final long userId) {

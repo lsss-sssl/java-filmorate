@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         SqlLoader.class
 })
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class FiimRepositoryTest {
+public class FilmRepositoryTest {
     private final FilmRepository filmRepository;
     private final UserRepository userRepository;
 
@@ -129,5 +129,23 @@ public class FiimRepositoryTest {
                 .toList()
                 .containsAll(List.of(film2.getId(), film3.getId(), film1.getId()))
         );
+    }
+
+    @Test
+    void shouldFindRecommendationsByUserId() {
+        User user1 = userRepository.save(makeUser("rec1@example.com", "rec1"));
+        User user2 = userRepository.save(makeUser("rec2@example.com", "rec2"));
+
+        Film filmA = filmRepository.save(makeFilm("Rec A", Mpa.G, Set.of()));
+        Film filmB = filmRepository.save(makeFilm("Rec B", Mpa.G, Set.of()));
+
+        filmRepository.addLike(filmA.getId(), user1.getId());
+        filmRepository.addLike(filmA.getId(), user2.getId());
+        filmRepository.addLike(filmB.getId(), user2.getId());
+
+        List<Film> recommendations = filmRepository.findRecommendationsByUserId(user1.getId());
+
+        assertThat(recommendations.size()).isEqualTo(1);
+        assertThat(recommendations.getFirst().getId()).isEqualTo(filmB.getId());
     }
 }
