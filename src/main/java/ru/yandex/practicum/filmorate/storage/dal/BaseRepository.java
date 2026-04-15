@@ -56,4 +56,11 @@ public abstract class BaseRepository<T> {
             throw new InternalServerException("Failed to save data");
         }
     }
+
+    protected void delete(String query, long id) {
+        int rowsDeleted = jdbc.update(query, id);
+        if (rowsDeleted == 0) {
+            throw new InternalServerException("Failed to delete data");
+        }
+    }
 }
