@@ -16,6 +16,11 @@ import java.util.List;
 public final class FilmController {
     private final FilmService filmService;
 
+// TODO:   GET    /films/search
+//         GET    /films/common?userId={userId}&friendId={friendId}
+//         GET    /films/director/{directorId}?sortBy=[year,likes]
+//         DELETE /films/{filmId}
+
     /**
      *     GET    /films
      *     GET    /films/{id}

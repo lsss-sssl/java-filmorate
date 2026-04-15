@@ -100,6 +100,18 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         return films;
     }
 
+    @Override
+    public List<Film> findRecommendationsByUserId(long userId) {
+        List<Film> films = findMany(
+                sql.load(FilmsSql.FIND_RECOMMENDATIONS_BY_USER_ID),
+                userId,
+                userId,
+                userId
+        );
+        loadGenres(films);
+        return films;
+    }
+
     private void resetGenres(Film film) {
         jdbc.update(
                 sql.load(GenreSql.DELETE_BY_ID),
