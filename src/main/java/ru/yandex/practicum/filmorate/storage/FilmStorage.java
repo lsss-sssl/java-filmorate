@@ -21,5 +21,6 @@ public interface FilmStorage {
     List<Film> findPopular(long count);
 
     void deleteById(long filmId);
+    
     List<Film> findRecommendationsByUserId(long userId);
 }
