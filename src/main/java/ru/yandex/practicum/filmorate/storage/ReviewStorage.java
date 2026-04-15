@@ -10,19 +10,11 @@ public interface ReviewStorage {
 
     Optional<Review> findById(long reviewId);
 
-    List<Review> findAllByFilmId(long reviewId, long count);
+    List<Review> findAllByFilmId(long filmId, long count);
 
     Review save(Review review);
 
     Review update(Review review);
-
-    void addLike(long reviewId, long userId);
-
-    void deleteLike(long reviewId, long userId);
-
-    void addDislike(long reviewId, long userId);
-
-    void deleteDislike(long reviewId, long userId);
 
     void delete(long reviewId);
 }

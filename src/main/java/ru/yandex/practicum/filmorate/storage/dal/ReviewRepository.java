@@ -2,73 +2,82 @@ package ru.yandex.practicum.filmorate.storage.dal;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
+import ru.yandex.practicum.filmorate.storage.dal.sql.ReviewsSql;
 import ru.yandex.practicum.filmorate.util.SqlLoader;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class ReviewRepository extends BaseRepository<Review> implements ReviewStorage {
-    private final NamedParameterJdbcTemplate namedJdbc;
 
     public ReviewRepository(
             JdbcTemplate jdbc,
             RowMapper<Review> mapper,
-            SqlLoader sql,
-            NamedParameterJdbcTemplate namedJdbc) {
+            SqlLoader sql) {
         super(jdbc, mapper, sql);
-        this.namedJdbc = namedJdbc;
     }
 
     @Override
     public List<Review> findAll(long count) {
-        return List.of();
+        return findMany(
+                sql.load(ReviewsSql.FIND_ALL),
+                count
+        );
     }
 
     @Override
     public Optional<Review> findById(long reviewId) {
-        return Optional.empty();
+        return findOne(
+                sql.load(ReviewsSql.FIND_BY_ID),
+                reviewId
+        );
     }
 
     @Override
-    public List<Review> findAllByFilmId(long reviewId, long count) {
-        return List.of();
+    public List<Review> findAllByFilmId(long filmId, long count) {
+        return findMany(
+                sql.load(ReviewsSql.FIND_ALL_BY_FILM_ID),
+                filmId,
+                count
+        );
     }
 
     @Override
     public Review save(Review review) {
-        return null;
+        long id = insert(
+                sql.load(ReviewsSql.CREATE),
+                review.getContent(),
+                review.isPositive(),
+                review.getUserId(),
+                review.getFilmId()
+        );
+        review.setId(id);
+        review.setUseful(0);
+        return review;
     }
 
     @Override
     public Review update(Review review) {
-        return null;
-    }
-
-    @Override
-    public void addLike(long reviewId, long userId) {
-
-    }
-
-    @Override
-    public void deleteLike(long reviewId, long userId) {
-
-    }
-
-    @Override
-    public void addDislike(long reviewId, long userId) {
-
-    }
-
-    @Override
-    public void deleteDislike(long reviewId, long userId) {
-
+        update(
+                sql.load(ReviewsSql.UPDATE),
+                review.getContent(),
+                review.isPositive(),
+                review.getUserId(),
+                review.getFilmId(),
+                review.getId()
+        );
+        return review;
     }
 
     @Override
     public void delete(long reviewId) {
-
+        delete(
+                sql.load(ReviewsSql.DELETE),
+                reviewId
+        );
     }
 }

@@ -6,9 +6,10 @@ import lombok.Data;
 @Data
 public final class ReviewDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private long id;
+    private long reviewId;
     private String content;
-    private boolean isPositive;
+    @JsonProperty("isPositive")
+    private Boolean isPositive;
     private long userId;
     private long filmId;
     private long useful;
