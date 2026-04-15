@@ -106,7 +106,7 @@ public class FilmRepositoryTest {
         assertThat(popularAfterLike.getFirst().getId()).isEqualTo(film.getId());
         filmRepository.deleteLike(film.getId(), user.getId());
         List<Film> popularAfterDelete = filmRepository.findPopular(10);
-        assertThat(popularAfterDelete.stream().filter(f -> f.getId().equals(film.getId())).findFirst()).isPresent();
+        assertThat(popularAfterDelete.stream().filter(f -> f.getId() == (film.getId())).findFirst()).isPresent();
     }
 
     @Test
