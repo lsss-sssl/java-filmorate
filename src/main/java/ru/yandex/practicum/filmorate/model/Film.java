@@ -9,7 +9,7 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode
 public final class Film {
-    private Long id;
+    private long id;
     private String name;
     private String description;
     private LocalDate releaseDate;

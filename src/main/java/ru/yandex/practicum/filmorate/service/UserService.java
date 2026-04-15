@@ -122,4 +122,12 @@ public class UserService {
     private User findByIdOrThrow(final long userId) {
         return userStorage.findById(userId).orElseThrow(() -> new NotFoundException("User not found by id=" + userId));
     }
+
+    @Transactional
+    public void deleteUser(long userId) {
+        log.info("Deleting user: id={}", userId);
+        findByIdOrThrow(userId);
+        userStorage.deleteById(userId);
+        log.info("User deleted: id={}", userId);
+    }
 }
