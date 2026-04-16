@@ -42,8 +42,14 @@ public final class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<FilmDto> getPopular(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getPopular(count);
+    public List<FilmDto> getPopular(
+            @RequestParam(required = false) Integer count,
+            @RequestParam(required = false) Integer genreId,
+            @RequestParam(required = false) Integer year) {
+
+        int limit = (count != null && count > 0) ? count : 10000;
+
+        return filmService.getPopular(limit, genreId, year);
     }
 
     @PostMapping

@@ -18,6 +18,7 @@ import java.util.*;
 @Repository
 public class FilmRepository extends BaseRepository<Film> implements FilmStorage {
     private final NamedParameterJdbcTemplate namedJdbc;
+    private final RowMapper<Film> filmRowMapper;
 
     public FilmRepository(
             JdbcTemplate jdbc,
@@ -26,6 +27,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
             NamedParameterJdbcTemplate namedJdbc) {
         super(jdbc, mapper, sql);
         this.namedJdbc = namedJdbc;
+        this.filmRowMapper = mapper;
     }
 
     @Override
@@ -92,7 +94,13 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
 
     @Override
     public List<Film> findPopular(long count) {
-        List<Film> films = findMany(sql.load(FilmsSql.FIND_POPULAR), count);
+        return findPopular(count, null, null);
+    }
+
+    @Override
+    public List<Film> findPopular(long count, Integer genreId, Integer year) {
+        String sqlQuery = sql.load(FilmsSql.FIND_POPULAR_WITH_FILTERS);
+        List<Film> films = jdbc.query(sqlQuery, filmRowMapper, genreId, genreId, year, year, count);
         loadGenres(films);
         return films;
     }

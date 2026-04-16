@@ -35,9 +35,9 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(findByIdOrThrow(filmId));
     }
 
-    public List<FilmDto> getPopular(final int count) {
-        log.debug("Request to get popular films, count={}", count);
-        return filmStorage.findPopular(count).stream()
+    public List<FilmDto> getPopular(int count, Integer genreId, Integer year) {
+        log.debug("Request to get popular films: count={}, genreId={}, year={}", count, genreId, year);
+        return filmStorage.findPopular(count, genreId, year).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
