@@ -4,13 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.mapper.EventMapper;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
     private final EventStorage eventStorage;
 
     public List<UserDto> getAll() {
@@ -39,19 +43,19 @@ public class UserService {
         return UserMapper.mapToUserDto(findByIdOrThrow(userId));
     }
 
+    public List<FilmDto> getRecommendations(final long userId) {
+        log.debug("Request to get recommendations by userId={}", userId);
+        findByIdOrThrow(userId);
+        return filmStorage.findRecommendationsByUserId(userId).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
     public List<UserDto> getFriendsById(final long userId) {
         log.debug("Request to get friends by userId={}", userId);
         findByIdOrThrow(userId);
         return userStorage.findFriendsById(userId).stream()
                 .map(UserMapper::mapToUserDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<EventDto> getFeed(final long userId) {
-        log.debug("Request to get feed by userId={}", userId);
-        findByIdOrThrow(userId);
-        return eventStorage.findFeedByUserId(userId).stream()
-                .map(EventMapper::mapToEventDto)
                 .collect(Collectors.toList());
     }
 
@@ -61,6 +65,14 @@ public class UserService {
         findByIdOrThrow(friendId);
         return userStorage.findCommonFriendsById(userId, friendId).stream()
                 .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventDto> getFeed(final long userId) {
+        log.debug("Request to get feed by userId={}", userId);
+        findByIdOrThrow(userId);
+        return eventStorage.findFeedByUserId(userId).stream()
+                .map(EventMapper::mapToEventDto)
                 .collect(Collectors.toList());
     }
 
@@ -124,5 +136,13 @@ public class UserService {
 
     private User findByIdOrThrow(final long userId) {
         return userStorage.findById(userId).orElseThrow(() -> new NotFoundException("User not found by id=" + userId));
+    }
+
+    @Transactional
+    public void deleteUser(long userId) {
+        log.info("Deleting user: id={}", userId);
+        findByIdOrThrow(userId);
+        userStorage.deleteById(userId);
+        log.info("User deleted: id={}", userId);
     }
 }

@@ -1,13 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class Review {
-    private Long reviewId;
+@EqualsAndHashCode
+public final class Review {
+    private long id;
     private String content;
-    private Boolean isPositive;
-    private Long userId;
-    private Long filmId;
-    private Integer useful;
+    private boolean isPositive;
+    private long userId;
+    private long filmId;
+    private long useful;
 }

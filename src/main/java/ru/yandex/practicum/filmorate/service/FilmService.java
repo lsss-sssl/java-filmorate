@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
@@ -85,5 +86,13 @@ public class FilmService {
 
     private void ensureUserExists(final long userId) {
         userStorage.findById(userId).orElseThrow(() -> new NotFoundException("User not found by id=" + userId));
+    }
+
+    @Transactional
+    public void deleteFilm(long filmId) {
+        log.info("Deleting film: id={}", filmId);
+        findByIdOrThrow(filmId);
+        filmStorage.deleteById(filmId);
+        log.info("Film deleted: id={}", filmId);
     }
 }

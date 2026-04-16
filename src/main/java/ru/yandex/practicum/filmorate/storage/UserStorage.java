@@ -24,4 +24,6 @@ public interface UserStorage {
     void endFriendship(long userId, long friendId);
 
     Optional<Long> findFriendshipStatus(long userId, long friendId);
+
+    void deleteById(long userId);
 }
