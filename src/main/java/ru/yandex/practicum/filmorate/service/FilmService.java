@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.mapper.EventMapper;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final EventStorage eventStorage;
 
     public List<FilmDto> getAll() {
         log.debug("Request to get all films");
@@ -64,6 +67,7 @@ public class FilmService {
         findByIdOrThrow(filmId);
         ensureUserExists(userId);
         filmStorage.addLike(filmId, userId);
+        eventStorage.save(EventMapper.mapToEvent(userId, "LIKE", "ADD", filmId));
         log.info("Like added: filmId={}, userId={}", filmId, userId);
     }
 
@@ -72,6 +76,7 @@ public class FilmService {
         findByIdOrThrow(filmId);
         ensureUserExists(userId);
         filmStorage.deleteLike(filmId, userId);
+        eventStorage.save(EventMapper.mapToEvent(userId, "LIKE", "REMOVE", filmId));
         log.info("Like removed: filmId={}, userId={}", filmId, userId);
     }
 

@@ -15,6 +15,9 @@ import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.dto.event.EventDto;
+import ru.yandex.practicum.filmorate.mapper.EventMapper;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final EventStorage eventStorage;
 
     public List<UserDto> getAll() {
         log.debug("Request to get all users");
@@ -64,6 +68,14 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public List<EventDto> getFeed(final long userId) {
+        log.debug("Request to get feed by userId={}", userId);
+        findByIdOrThrow(userId);
+        return eventStorage.findFeedByUserId(userId).stream()
+                .map(EventMapper::mapToEventDto)
+                .collect(Collectors.toList());
+    }
+
     public UserDto create(NewUserRequest request) {
         log.info("Creating user: email={}, login={}", request.getEmail(), request.getLogin());
         User user = UserMapper.mapToUser(request);
@@ -95,9 +107,11 @@ public class UserService {
         if (friendToUserStatus.isPresent() && friendToUserStatus.get() == FriendshipStatus.UNCONFIRMED.getId()) {
             userStorage.classifyFriendship(userId, friendId, FriendshipStatus.CONFIRMED);
             userStorage.classifyFriendship(friendId, userId, FriendshipStatus.CONFIRMED);
+            eventStorage.save(EventMapper.mapToEvent(userId, "FRIEND", "UPDATE", friendId));
             log.info("Friendship confirmed: userId={}, friendId={}", userId, friendId);
         } else {
             userStorage.classifyFriendship(userId, friendId, FriendshipStatus.UNCONFIRMED);
+            eventStorage.save(EventMapper.mapToEvent(userId, "FRIEND", "ADD", friendId));
             log.info("Friend request created: userId={}, friendId={}", userId, friendId);
         }
     }
@@ -116,6 +130,7 @@ public class UserService {
             userStorage.classifyFriendship(friendId, userId, FriendshipStatus.UNCONFIRMED);
         }
         userStorage.endFriendship(userId, friendId);
+        eventStorage.save(EventMapper.mapToEvent(userId, "FRIEND", "REMOVE", friendId));
         log.info("Friend removed: userId={}, friendId={}", userId, friendId);
     }
 
