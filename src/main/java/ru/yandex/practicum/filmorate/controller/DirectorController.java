@@ -21,7 +21,7 @@ public class DirectorController {
         return service.getAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{directorId}")
     public List<FilmDto> getSortedFilm(@PathVariable Long directorId,
                                        @RequestParam(required = false) String sortBy) {
         return service.findFilmsSorted(directorId, sortBy);
