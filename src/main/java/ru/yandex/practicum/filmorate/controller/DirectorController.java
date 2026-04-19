@@ -18,10 +18,10 @@ public class DirectorController {
 
     @GetMapping
     public List<DirectorDto> findAll() {
-        return service.gttAll();
+        return service.getAll();
     }
 
-    @GetMapping("/{directorId}")
+    @GetMapping("/{id}")
     public List<FilmDto> getSortedFilm(@PathVariable Long directorId,
                                        @RequestParam(required = false) String sortBy) {
         return service.findFilmsSorted(directorId, sortBy);
@@ -33,7 +33,7 @@ public class DirectorController {
     }
 
     @PostMapping
-    public DirectorDto addDirector(@RequestParam(required = false) NewDirectorRequest request) {
+    public DirectorDto addDirector(@RequestBody NewDirectorRequest request) {
        return service.create(request);
     }
 

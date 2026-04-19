@@ -24,7 +24,7 @@ public class DirectorService {
     private final DirectorStorage directorStorage;
     private final FilmStorage filmStorage;
 
-    public List<DirectorDto> gttAll() {
+    public List<DirectorDto> getAll() {
         log.debug("Request to get all directors");
         return directorStorage.findAll().stream().map(DirectorMapper::mapToDirectorDto).collect(Collectors.toList());
     }
