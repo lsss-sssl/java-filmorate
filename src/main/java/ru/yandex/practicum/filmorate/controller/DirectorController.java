@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.service.DirectorService;
 import java.util.List;
 
 @RestController
-@RequestMapping("directors")
+@RequestMapping("/directors")
 @RequiredArgsConstructor
 public class DirectorController {
     private final DirectorService service;
