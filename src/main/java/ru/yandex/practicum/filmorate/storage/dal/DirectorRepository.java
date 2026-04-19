@@ -46,8 +46,7 @@ public  class DirectorRepository extends BaseRepository<Director> implements Dir
     @Override
     public Director save(Director director) {
         long id = insert(sql.load(DirectorSql.CREATE),
-                director.getFirstName(),
-                director.getLastName());
+                director.getName());
         director.setId(id);
         resetFilms(director);
         return director;
@@ -57,8 +56,7 @@ public  class DirectorRepository extends BaseRepository<Director> implements Dir
     public Director update(Director director) {
         update(sql.load(FilmsSql.UPDATE),
                 director.getId(),
-                director.getFirstName(),
-                director.getLastName());
+                director.getName());
         resetFilms(director);
         return director;
     }

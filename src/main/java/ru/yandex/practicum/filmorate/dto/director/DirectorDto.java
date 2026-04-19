@@ -14,7 +14,6 @@ import java.util.Set;
 public class DirectorDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private  long id;
-    private String firstName;
-    private String lastName;
+    private String name;
     private Set<Film> films;
 }

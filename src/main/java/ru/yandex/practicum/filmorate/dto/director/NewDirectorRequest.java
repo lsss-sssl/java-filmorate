@@ -9,8 +9,6 @@ import java.util.Set;
 @Data
 public class NewDirectorRequest {
     @NotBlank(message = "имя не должно быть пустым")
-    private String firstName;
-    @NotBlank(message = "фамилия не должна быть пустой")
-    private String lastName;
+    private String name;
     private Set<Film> films;
 }

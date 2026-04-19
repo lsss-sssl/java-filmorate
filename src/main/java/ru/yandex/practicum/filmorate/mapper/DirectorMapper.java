@@ -11,8 +11,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 public class DirectorMapper {
     public static Director mapToDirector(NewDirectorRequest request) {
         Director director = new Director();
-        director.setFirstName(request.getFirstName());
-        director.setLastName(request.getLastName());
+        director.setName(request.getName());
         director.setFilms(request.getFilms());
         return director;
     }
@@ -20,19 +19,14 @@ public class DirectorMapper {
     public static DirectorDto mapToDirectorDto(Director director) {
         DirectorDto dto = new DirectorDto();
         dto.setId(director.getId());
-        dto.setFirstName(director.getFirstName());
-        dto.setLastName(director.getLastName());
+        dto.setName(director.getName());
         dto.setFilms(director.getFilms());
         return dto;
     }
 
     public static void updateDirectorFields(Director director, UpdateDirectorRequest request) {
         if (request.hasName()) {
-            director.setFirstName(request.getFirstName());
-        }
-
-        if (request.hasLastName()) {
-            director.setLastName(request.getLastName());
+            director.setName(request.getName());
         }
 
         if (request.hasFilms()) {

@@ -7,7 +7,6 @@ import java.util.Set;
 @Data
 public class Director {
     private  long id;
-    private String firstName;
-    private String lastName;
+    private String name;
     private Set<Film> films;
 }

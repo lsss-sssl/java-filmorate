@@ -42,7 +42,7 @@ public class DirectorService {
     }
 
     public DirectorDto create(NewDirectorRequest request) {
-        log.debug("Creating director: firstName{}, lastName{}", request.getFirstName(), request.getLastName());
+        log.debug("Creating director: firstName{}, lastName{}", request.getName());
 
         Director director = DirectorMapper.mapToDirector(request);
         DirectorDto dto = DirectorMapper.mapToDirectorDto(directorStorage.save(director));
