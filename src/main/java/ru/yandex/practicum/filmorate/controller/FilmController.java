@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class FilmController {
     private final FilmService filmService;
+    private final DirectorService service;
 
 // TODO:   GET    /films/search
 //         GET    /films/common?userId={userId}&friendId={friendId}
@@ -50,6 +53,14 @@ public final class FilmController {
         int limit = (count != null && count > 0) ? count : 10000;
 
         return filmService.getPopular(limit, genreId, year);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<FilmDto> getFilmsByDirector(
+            @PathVariable Long directorId,
+            @RequestParam String sortBy
+    ) {
+        return service.findFilmsSorted(directorId, sortBy);
     }
 
     @PostMapping
