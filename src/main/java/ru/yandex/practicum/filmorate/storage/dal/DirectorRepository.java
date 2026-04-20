@@ -51,9 +51,11 @@ public  class DirectorRepository extends BaseRepository<Director> implements Dir
 
     @Override
     public Director update(Director director) {
-        update(sql.load(FilmsSql.UPDATE),
-                director.getId(),
-                director.getName());
+        update(
+                sql.load(DirectorSql.UPDATE),   // SQL для directors
+                director.getName(),             // SET name = ?
+                director.getId()                // WHERE id = ?
+        );
         return director;
     }
 
