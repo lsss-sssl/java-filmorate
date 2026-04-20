@@ -10,5 +10,4 @@ import java.util.Set;
 public class NewDirectorRequest {
     @NotBlank(message = "имя не должно быть пустым")
     private String name;
-    private Set<Film> films;
 }

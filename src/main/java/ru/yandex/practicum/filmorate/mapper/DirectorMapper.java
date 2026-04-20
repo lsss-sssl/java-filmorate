@@ -12,7 +12,6 @@ public class DirectorMapper {
     public static Director mapToDirector(NewDirectorRequest request) {
         Director director = new Director();
         director.setName(request.getName());
-        director.setFilms(request.getFilms());
         return director;
     }
 
@@ -26,10 +25,6 @@ public class DirectorMapper {
     public static void updateDirectorFields(Director director, UpdateDirectorRequest request) {
         if (request.hasName()) {
             director.setName(request.getName());
-        }
-
-        if (request.hasFilms()) {
-            director.setFilms(request.getFilms());
         }
     }
 }

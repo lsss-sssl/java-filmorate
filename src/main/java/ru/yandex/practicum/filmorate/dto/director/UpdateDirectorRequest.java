@@ -16,8 +16,4 @@ public class UpdateDirectorRequest {
     public  boolean hasName() {
         return !(name == null || name.isBlank());
     }
-
-    public boolean hasFilms() {
-        return !(films == null);
-    }
 }

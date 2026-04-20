@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -170,15 +171,19 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         if (films.isEmpty()) return;
 
         List<Long> flmIds = films.stream().map(Film::getId).toList();
-        Map<Long, Set<Film>> filmsByDirectorsIds = new HashMap<>();
+        Map<Long, Set<Director>> directorsByFilmId = new HashMap<>();
         namedJdbc.query(sql.load(FilmsSql.FIND_DIRECTORS_BY_FILM_IDS),
                 new MapSqlParameterSource("flmIds", flmIds),
                 rs -> {
-                    long directorId = rs.getLong("director_id");
                     long filmId = rs.getLong("film_id");
-                    filmsByDirectorsIds
-                            .computeIfAbsent(directorId, id -> new LinkedHashSet<>())
-                            .add(Film.fromId(filmId));
+
+                    Director director = new Director();
+                    director.setId(rs.getLong("director_id"));
+                    director.setName(rs.getString("name"));
+
+                    directorsByFilmId
+                            .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
+                            .add(director);
                 });
     }
 

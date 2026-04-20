@@ -8,5 +8,10 @@ import java.util.Set;
 public class Director {
     private  long id;
     private String name;
-    private Set<Film> films;
+
+    public static Director fromId(long id){
+        Director director = new Director();
+        director.setId(id);
+        return director;
+    }
 }
