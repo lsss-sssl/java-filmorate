@@ -42,7 +42,10 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     @Override
     public Optional<Film> findById(long filmId) {
         Optional<Film> film = findOne(sql.load(FilmsSql.FIND_BY_ID), filmId);
-        film.ifPresent(f -> f.setGenres(loadGenres(filmId)));
+        film.ifPresent(f -> {
+            f.setGenres(loadGenres(filmId));
+            f.setDirectors(findDirectorsByFilmId(filmId));
+        });
         return film;
     }
 
@@ -205,5 +208,23 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     @Override
     public void deleteById(long filmId) {
         update(sql.load(FilmsSql.DELETE_BY_ID), filmId);
+    }
+
+
+    public Set<Director> findDirectorsByFilmId(long filmId) {
+        String sql = """
+        SELECT d.id, d.name
+        FROM directors d
+        JOIN directors_vis_films dvf ON d.id = dvf.director_id
+        WHERE dvf.film_id = ?
+        ORDER BY d.id
+        """;
+
+        return new LinkedHashSet<>(jdbc.query(sql, (rs, rowNum) -> {
+            Director director = new Director();
+            director.setId(rs.getLong("id"));
+            director.setName(rs.getString("name"));
+            return director;
+        }, filmId));
     }
 }
