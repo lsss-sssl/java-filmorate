@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.dal.sql.DirectorSql;
-import ru.yandex.practicum.filmorate.storage.dal.sql.FilmsSql;
 import ru.yandex.practicum.filmorate.util.SqlLoader;
 
 import java.util.*;
