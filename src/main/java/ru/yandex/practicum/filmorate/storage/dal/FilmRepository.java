@@ -173,7 +173,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         List<Long> flmIds = films.stream().map(Film::getId).toList();
         Map<Long, Set<Director>> directorsByFilmId = new HashMap<>();
         namedJdbc.query(sql.load(FilmsSql.FIND_DIRECTORS_BY_FILM_IDS),
-                new MapSqlParameterSource("flmIds", flmIds),
+                new MapSqlParameterSource("filmIds", flmIds),
                 rs -> {
                     long filmId = rs.getLong("film_id");
 
