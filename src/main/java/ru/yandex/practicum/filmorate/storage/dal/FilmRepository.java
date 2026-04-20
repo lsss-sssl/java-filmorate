@@ -34,6 +34,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     public List<Film> findAll() {
         List<Film> films = findMany(sql.load(FilmsSql.FIND_ALL));
         loadGenres(films);
+        loadDirectors(films);
         return films;
     }
 
@@ -56,6 +57,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         );
         film.setId(id);
         resetGenres(film);
+        resetDirectors(film);
         return film;
     }
 
@@ -71,6 +73,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                 film.getId()
         );
         resetGenres(film);
+        resetDirectors(film);
         return film;
     }
 
@@ -102,6 +105,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         String sqlQuery = sql.load(FilmsSql.FIND_POPULAR_WITH_FILTERS);
         List<Film> films = jdbc.query(sqlQuery, filmRowMapper, genreId, genreId, year, year, count);
         loadGenres(films);
+        loadDirectors(films);
         return films;
     }
 
@@ -114,6 +118,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                 userId
         );
         loadGenres(films);
+        loadDirectors(films);
         return films;
     }
 
@@ -159,6 +164,37 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         for (Film film : films) {
             film.setGenres(genresByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
         }
+    }
+
+    private void loadDirectors(List<Film> films) {
+        if (films.isEmpty()) return;
+
+        List<Long> flmIds = films.stream().map(Film::getId).toList();
+        Map<Long, Set<Film>> filmsByDirectorsIds = new HashMap<>();
+        namedJdbc.query(sql.load(FilmsSql.FIND_DIRECTORS_BY_FILM_IDS),
+                new MapSqlParameterSource("flmIds", flmIds),
+                rs -> {
+                    long directorId = rs.getLong("director_id");
+                    long filmId = rs.getLong("film_id");
+                    filmsByDirectorsIds
+                            .computeIfAbsent(directorId, id -> new LinkedHashSet<>())
+                            .add(Film.fromId(filmId));
+                });
+    }
+
+    private void resetDirectors(Film film) {
+        jdbc.update(sql.load(FilmsSql.DELETE_DIRECTORS_BY_FILM_ID), film.getId());
+        if (film.getDirectors() == null || film.getDirectors().isEmpty()) return;;
+
+        jdbc.batchUpdate(
+                sql.load(FilmsSql.ADD_DIRECTOR_BY_FILM_IDS),
+                film.getDirectors(),
+                film.getDirectors().size(),
+                (ps, director) -> {
+                    ps.setLong(1, director.getId());
+                    ps.setLong(2, film.getId());
+                }
+        );
     }
 
     @Override

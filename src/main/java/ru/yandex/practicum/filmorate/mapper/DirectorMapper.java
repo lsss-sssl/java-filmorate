@@ -20,7 +20,6 @@ public class DirectorMapper {
         DirectorDto dto = new DirectorDto();
         dto.setId(director.getId());
         dto.setName(director.getName());
-        dto.setFilms(director.getFilms());
         return dto;
     }
 

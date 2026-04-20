@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.dal;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -34,7 +33,6 @@ public  class DirectorRepository extends BaseRepository<Director> implements Dir
     @Override
     public List<Director> findAll() {
         List<Director> directors = findMany(sql.load(DirectorSql.FIND_ALL));
-        loadFilms(directors);
         return directors;
     }
 
@@ -48,7 +46,6 @@ public  class DirectorRepository extends BaseRepository<Director> implements Dir
         long id = insert(sql.load(DirectorSql.CREATE),
                 director.getName());
         director.setId(id);
-        resetFilms(director);
         return director;
     }
 
@@ -57,7 +54,6 @@ public  class DirectorRepository extends BaseRepository<Director> implements Dir
         update(sql.load(FilmsSql.UPDATE),
                 director.getId(),
                 director.getName());
-        resetFilms(director);
         return director;
     }
 
@@ -71,37 +67,5 @@ public  class DirectorRepository extends BaseRepository<Director> implements Dir
     @Override
     public void deleteById(long directorId) {
         update(sql.load(DirectorSql.DELETE_BY_ID), directorId);
-    }
-
-
-    private void loadFilms(List<Director> directors) {
-        if (directors.isEmpty()) return;
-
-        List<Long> directorIds = directors.stream().map(Director::getId).toList();
-        Map<Long, Set<Film>> filmsByDirectorsIds = new HashMap<>();
-        namedJdbc.query(sql.load(DirectorSql.FIND_FILMS_BY_DIRECTOR_IDS),
-                new MapSqlParameterSource("directorIds", directorIds),
-                rs -> {
-                    long directorId = rs.getLong("director_id");
-                    long filmId = rs.getLong("film_id");
-                    filmsByDirectorsIds
-                            .computeIfAbsent(directorId, id -> new LinkedHashSet<>())
-                            .add(Film.fromId(filmId));
-                });
-    }
-
-    private void resetFilms(Director director) {
-        jdbc.update(sql.load(DirectorSql.DELETE_FILMS_BY_DIRECTOR_ID), director.getId());
-        if (director.getFilms() == null || director.getFilms().isEmpty()) return;;
-
-        jdbc.batchUpdate(
-                sql.load(DirectorSql.AddFilmByDirectorId),
-                director.getFilms(),
-                director.getFilms().size(),
-                (ps, film) -> {
-                    ps.setLong(1, director.getId());
-                    ps.setLong(2, film.getId());
-                }
-        );
     }
 }
