@@ -32,12 +32,12 @@ public class ReviewService {
     private final EventStorage eventStorage;
 
     public ReviewDto getById(final long reviewId) {
-        log.debug("Request to get review by id={}", reviewId);
+        log.info("Request to get review by id={}", reviewId);
         return ReviewMapper.mapToReviewDto(findByIdOrThrow(reviewId));
     }
 
     public List<ReviewDto> getAllByFilmId(final long filmId, final long count) {
-        log.debug("Request to get reviews for film");
+        log.info("Request to get reviews for film");
         ensureFilmExists(filmId);
         return reviewStorage.findAllByFilmId(filmId, count).stream()
                 .map(ReviewMapper::mapToReviewDto)

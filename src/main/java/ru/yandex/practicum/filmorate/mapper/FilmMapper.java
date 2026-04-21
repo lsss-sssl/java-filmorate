@@ -2,11 +2,13 @@ package ru.yandex.practicum.filmorate.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.mpa.MpaDto;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -23,6 +25,7 @@ public final class FilmMapper {
         film.setDuration(request.getDuration());
         film.setMpa(request.getMpa());
         film.setGenres(request.getGenres());
+        film.setDirectors(request.getDirectors());
         return film;
     }
 
@@ -46,6 +49,14 @@ public final class FilmMapper {
                           .toList()
                         : List.of()
         );
+        dto.setDirectors(
+                film.getDirectors() != null
+                        ? film.getDirectors().stream()
+                          .sorted(Comparator.comparingLong(Director::getId))
+                          .map(d -> new DirectorDto(d.getId(), d.getName()))
+                          .toList()
+                        : List.of()
+        );
         return dto;
     }
 
@@ -56,5 +67,6 @@ public final class FilmMapper {
         if (request.hasDuration()) film.setDuration(request.getDuration());
         if (request.hasMpa()) film.setMpa(request.getMpa());
         if (request.hasGenres()) film.setGenres(request.getGenres());
+        if (request.hasDirectors()) film.setDirectors(request.getDirectors());
     }
 }

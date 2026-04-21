@@ -18,17 +18,18 @@ public final class FilmController {
 
 // TODO:   GET    /films/search
 //         GET    /films/common?userId={userId}&friendId={friendId}
-//         GET    /films/director/{directorId}?sortBy=[year,likes]
-//         DELETE /films/{filmId}
 
     /**
      *     GET    /films
      *     GET    /films/{id}
      *     GET    /films/popular?count={count}
+     *     GET    /films/director/{directorId}?sortBy=[year,likes]
+     *     GET    /films/common?userId={userId}&friendId={friendId}
      *     POST   /films
      *     PUT    /films
      *     PUT    /films/{filmId}/like/{userId}
      *     DELETE /films/{filmId}/like/{userId}
+     *     DELETE /films/{filmId}
      */
 
     @GetMapping
@@ -50,6 +51,13 @@ public final class FilmController {
         int limit = (count != null && count > 0) ? count : 10000;
 
         return filmService.getPopular(limit, genreId, year);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<FilmDto> getByDirector(
+            @PathVariable Long directorId,
+            @RequestParam String sortBy) {
+        return filmService.getByDirector(directorId, sortBy);
     }
 
     @PostMapping
