@@ -28,19 +28,19 @@ public class UserService {
     private final FilmStorage filmStorage;
 
     public List<UserDto> getAll() {
-        log.debug("Request to get all users");
+        log.info("Request to get all users");
         return userStorage.findAll().stream()
                 .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
     public UserDto getById(final long userId) {
-        log.debug("Request to get user by id={}", userId);
+        log.info("Request to get user by id={}", userId);
         return UserMapper.mapToUserDto(findByIdOrThrow(userId));
     }
 
     public List<FilmDto> getRecommendations(final long userId) {
-        log.debug("Request to get recommendations by userId={}", userId);
+        log.info("Request to get recommendations by userId={}", userId);
         findByIdOrThrow(userId);
         return filmStorage.findRecommendationsByUserId(userId).stream()
                 .map(FilmMapper::mapToFilmDto)
@@ -48,7 +48,7 @@ public class UserService {
     }
 
     public List<UserDto> getFriendsById(final long userId) {
-        log.debug("Request to get friends by userId={}", userId);
+        log.info("Request to get friends by userId={}", userId);
         findByIdOrThrow(userId);
         return userStorage.findFriendsById(userId).stream()
                 .map(UserMapper::mapToUserDto)
@@ -56,7 +56,7 @@ public class UserService {
     }
 
     public List<UserDto> getCommonFriends(final Long userId, final Long friendId) {
-        log.debug("Request to get common friends: userId={}, friendId={}", userId, friendId);
+        log.info("Request to get common friends: userId={}, friendId={}", userId, friendId);
         findByIdOrThrow(userId);
         findByIdOrThrow(friendId);
         return userStorage.findCommonFriendsById(userId, friendId).stream()

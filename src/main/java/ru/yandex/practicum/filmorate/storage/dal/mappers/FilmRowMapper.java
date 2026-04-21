@@ -21,5 +21,4 @@ public final class FilmRowMapper implements RowMapper<Film> {
         film.setMpa(Mpa.fromId(resultSet.getLong("mpa_id")));
         return film;
     }
-
 }

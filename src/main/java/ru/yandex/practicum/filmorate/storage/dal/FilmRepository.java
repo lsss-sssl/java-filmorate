@@ -151,7 +151,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
 
     private void resetGenres(Film film) {
         jdbc.update(
-                sql.load(GenreSql.DELETE_BY_ID),
+                sql.load(GenreSql.DELETE_BY_FILM_ID),
                 film.getId()
         );
         if (film.getGenres() == null || film.getGenres().isEmpty()) return;
@@ -174,22 +174,40 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                 sql.load(FilmsSql.FIND_GENRES_BY_FILM_IDS),
                 new MapSqlParameterSource("filmIds", filmIds),
                 rs -> {
-            long filmId = rs.getLong("film_id");
-            long genreId = rs.getLong("genre_id");
-            genresByFilmId
-                    .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
-                    .add(Genre.fromId(genreId));
-        });
+                    long filmId = rs.getLong("film_id");
+                    long genreId = rs.getLong("genre_id");
+                    genresByFilmId
+                            .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
+                            .add(Genre.fromId(genreId));
+                });
         for (Film film : films) {
             film.setGenres(genresByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
         }
+    }
+
+    private void resetDirectors(Film film) {
+        jdbc.update(
+                sql.load(DirectorSql.DELETE_BY_FILM_ID),
+                film.getId()
+        );
+        if (film.getDirectors() == null || film.getDirectors().isEmpty()) return;
+        jdbc.batchUpdate(
+                sql.load(DirectorSql.SET_DIRECTOR),
+                film.getDirectors(),
+                film.getDirectors().size(),
+                (ps, director) -> {
+                    ps.setLong(1, film.getId());
+                    ps.setLong(2, director.getId());
+                }
+        );
     }
 
     private void loadDirectors(List<Film> films) {
         if (films.isEmpty()) return;
         List<Long> filmIds = films.stream().map(Film::getId).toList();
         Map<Long, Set<Director>> directorsByFilmId = new HashMap<>();
-        namedJdbc.query(sql.load(FilmsSql.FIND_DIRECTORS_BY_FILM_IDS),
+        namedJdbc.query(
+                sql.load(FilmsSql.FIND_DIRECTORS_BY_FILM_IDS),
                 new MapSqlParameterSource("filmIds", filmIds),
                 rs -> {
                     long filmId = rs.getLong("film_id");
@@ -203,21 +221,6 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         for (Film film : films) {
             film.setDirectors(directorsByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
         }
-    }
-
-    private void resetDirectors(Film film) {
-        jdbc.update(sql.load(FilmsSql.DELETE_DIRECTORS_BY_FILM_ID), film.getId());
-        if (film.getDirectors() == null || film.getDirectors().isEmpty()) return;
-
-        jdbc.batchUpdate(
-                sql.load(FilmsSql.ADD_DIRECTOR_BY_FILM_IDS),
-                film.getDirectors(),
-                film.getDirectors().size(),
-                (ps, director) -> {
-                    ps.setLong(1, director.getId());
-                    ps.setLong(2, film.getId());
-                }
-        );
     }
 
     @Override

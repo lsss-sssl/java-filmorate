@@ -22,19 +22,19 @@ public class DirectorService {
     private final DirectorStorage directorStorage;
 
     public List<DirectorDto> getAll() {
-        log.debug("Request to get all directors");
+        log.info("Request to get all directors");
         return directorStorage.findAll().stream()
                 .map(DirectorMapper::mapToDirectorDto)
                 .collect(Collectors.toList());
     }
 
     public DirectorDto getById(final long directorId) {
-        log.debug("Request to find director by id={}", directorId);
+        log.info("Request to find director by id={}", directorId);
         return DirectorMapper.mapToDirectorDto(findByIdOrThrow(directorId));
     }
 
     public DirectorDto create(NewDirectorRequest request) {
-        log.debug("Creating director: name={}", request.getName());
+        log.info("Creating director: name={}", request.getName());
         Director director = DirectorMapper.mapToDirector(request);
         DirectorDto dto = DirectorMapper.mapToDirectorDto(directorStorage.save(director));
         log.info("Director created: id={}", dto.getId());
@@ -42,22 +42,22 @@ public class DirectorService {
     }
 
     public DirectorDto update(UpdateDirectorRequest request) {
-        log.debug("Updating director: id={}", request.getId());
+        log.info("Updating director: id={}", request.getId());
         Director oldDirctor = findByIdOrThrow(request.getId());
         DirectorMapper.updateDirectorFields(oldDirctor, request);
         directorStorage.update(oldDirctor);
+        log.info("Director updated: id={}", oldDirctor.getId());
         return DirectorMapper.mapToDirectorDto(oldDirctor);
     }
 
     @Transactional
     public void deleteDirector(long directorId) {
-        log.debug("Deleting director with id={}", directorId);
+        log.info("Deleting director with id={}", directorId);
         findByIdOrThrow(directorId);
         directorStorage.deleteById(directorId);
     }
 
     private Director findByIdOrThrow(final long directorId) {
-        return directorStorage.findById(directorId)
-                .orElseThrow(() -> new NotFoundException("Director not found by id=" + directorId));
+        return directorStorage.findById(directorId).orElseThrow(() -> new NotFoundException("Director not found by id=" + directorId));
     }
 }

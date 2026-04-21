@@ -30,18 +30,18 @@ public final class DirectorController {
     }
 
     @GetMapping("/{id}")
-    public  DirectorDto getDirectorById(@PathVariable long id) {
+    public DirectorDto getById(@PathVariable long id) {
         return directorService.getById(id);
     }
 
     @PostMapping
     public DirectorDto create(@Valid @RequestBody NewDirectorRequest request) {
-       return directorService.create(request);
+        return directorService.create(request);
     }
 
     @PutMapping()
     public DirectorDto update(@Valid @RequestBody UpdateDirectorRequest request) {
-        return  directorService.update(request);
+        return directorService.update(request);
     }
 
     @DeleteMapping("{id}")
