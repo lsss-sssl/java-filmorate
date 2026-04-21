@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.dto.event.EventDto;
 
 import java.util.List;
 
@@ -55,6 +56,11 @@ public final class UserController {
     public List<UserDto> getCommonFriends(@PathVariable final long id,
                                           @PathVariable final Long friendId) {
         return userService.getCommonFriends(id, friendId);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<EventDto> getFeed(@PathVariable final long id) {
+        return userService.getFeed(id);
     }
 
     @PostMapping

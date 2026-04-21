@@ -14,6 +14,8 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewReactionStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.mapper.EventMapper;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ public class ReviewService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final ReviewReactionStorage reactionStorage;
+    private final EventStorage eventStorage;
 
     public ReviewDto getById(final long reviewId) {
         log.info("Request to get review by id={}", reviewId);
@@ -46,7 +49,9 @@ public class ReviewService {
         ensureUserExists(request.getUserId());
         ensureFilmExists(request.getFilmId());
         Review review = ReviewMapper.mapToReview(request);
-        ReviewDto reviewDto = ReviewMapper.mapToReviewDto(reviewStorage.save(review));
+        Review savedReview = reviewStorage.save(review);
+        eventStorage.save(EventMapper.mapToEvent(savedReview.getUserId(), "REVIEW", "ADD", savedReview.getId()));
+        ReviewDto reviewDto = ReviewMapper.mapToReviewDto(savedReview);
         log.info("Review created: id={}", reviewDto.getReviewId());
         return reviewDto;
     }
@@ -56,6 +61,7 @@ public class ReviewService {
         Review oldReview = findByIdOrThrow(request.getReviewId());
         ReviewMapper.updateReviewFields(oldReview, request);
         reviewStorage.update(oldReview);
+        eventStorage.save(EventMapper.mapToEvent(oldReview.getUserId(), "REVIEW", "UPDATE", oldReview.getId()));
         log.info("Review updated: id={}", oldReview.getId());
         return ReviewMapper.mapToReviewDto(oldReview);
     }
@@ -86,8 +92,9 @@ public class ReviewService {
 
     public void delete(final long reviewId) {
         log.info("Deleting review: reviewId={}", reviewId);
-        findByIdOrThrow(reviewId);
+        Review review = findByIdOrThrow(reviewId);
         reviewStorage.delete(reviewId);
+        eventStorage.save(EventMapper.mapToEvent(review.getUserId(), "REVIEW", "REMOVE", reviewId));
         log.info("Review deleted: reviewId={}", reviewId);
     }
 
