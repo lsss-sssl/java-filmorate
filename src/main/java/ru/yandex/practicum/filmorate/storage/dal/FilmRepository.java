@@ -227,4 +227,23 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     public void deleteById(long filmId) {
         update(sql.load(FilmsSql.DELETE_BY_ID), filmId);
     }
+
+    @Override
+    public List<Film> search(String query, boolean searchByTitle, boolean searchByDirector) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
+
+        String searchPattern = query.toLowerCase();
+
+        List<Film> films = jdbc.query(
+                sql.load(FilmsSql.SEARCH_FILMS),
+                filmRowMapper,
+                searchByTitle, searchPattern, searchByDirector, searchPattern
+        );
+
+        loadGenres(films);
+        loadDirectors(films);
+        return films;
+    }
 }
