@@ -108,7 +108,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     @Override
     public List<Film> findPopular(long count, Integer genreId, Integer year) {
         String sqlQuery = sql.load(FilmsSql.FIND_POPULAR_WITH_FILTERS);
-        List<Film> films = jdbc.query(sqlQuery, filmRowMapper, genreId, genreId, year, year, count);
+        List<Film> films = findMany(sqlQuery, genreId, genreId, year, year, count);
         loadGenres(films);
         loadDirectors(films);
         return films;
@@ -236,9 +236,8 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
 
         String searchPattern = query.toLowerCase();
 
-        List<Film> films = jdbc.query(
+        List<Film> films = findMany(
                 sql.load(FilmsSql.SEARCH_FILMS),
-                filmRowMapper,
                 searchByTitle, searchPattern, searchByDirector, searchPattern
         );
 
