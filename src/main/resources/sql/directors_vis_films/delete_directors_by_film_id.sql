@@ -1,2 +1,2 @@
-DELETE FROM directors_vis_films
+DELETE FROM films_directors
 WHERE film_id = ?;

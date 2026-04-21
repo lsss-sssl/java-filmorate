@@ -1,4 +1,3 @@
-SELECT id,
-       name
+SELECT *
 FROM directors
 WHERE id = ?;

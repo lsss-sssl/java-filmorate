@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.dal.sql.DirectorSql;
 import ru.yandex.practicum.filmorate.storage.dal.sql.FilmsSql;
 import ru.yandex.practicum.filmorate.storage.dal.sql.GenreSql;
 import ru.yandex.practicum.filmorate.storage.dal.sql.LikesSql;
@@ -43,8 +44,8 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     public Optional<Film> findById(long filmId) {
         Optional<Film> film = findOne(sql.load(FilmsSql.FIND_BY_ID), filmId);
         film.ifPresent(f -> {
-            f.setGenres(loadGenres(filmId));
-            f.setDirectors(findDirectorsByFilmId(filmId));
+            loadGenres(List.of(f));
+            loadDirectors(List.of(f));
         });
         return film;
     }
@@ -126,6 +127,28 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         return films;
     }
 
+    @Override
+    public List<Film> findByDirectorIdOrderByYear(final long directorId) {
+        List<Film> films = findMany(
+                sql.load(FilmsSql.FIND_BY_DIRECTOR_ID_ORDER_BY_YEAR),
+                directorId
+        );
+        loadGenres(films);
+        loadDirectors(films);
+        return films;
+    }
+
+    @Override
+    public List<Film> findByDirectorIdOrderByLikes(final long directorId) {
+        List<Film> films = findMany(
+                sql.load(FilmsSql.FIND_BY_DIRECTOR_ID_ORDER_BY_LIKES),
+                directorId
+        );
+        loadGenres(films);
+        loadDirectors(films);
+        return films;
+    }
+
     private void resetGenres(Film film) {
         jdbc.update(
                 sql.load(GenreSql.DELETE_BY_ID),
@@ -141,14 +164,6 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                     ps.setLong(2, genre.getId());
                 }
         );
-    }
-
-    private Set<Genre> loadGenres(long filmId) {
-        return new HashSet<>(jdbc.query(
-                sql.load(FilmsSql.FIND_GENRES_BY_ID),
-                (rs, rowNum) -> Genre.fromId(rs.getLong("genre_id")),
-                filmId
-        ));
     }
 
     private void loadGenres(List<Film> films) {
@@ -172,27 +187,27 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
 
     private void loadDirectors(List<Film> films) {
         if (films.isEmpty()) return;
-
-        List<Long> flmIds = films.stream().map(Film::getId).toList();
+        List<Long> filmIds = films.stream().map(Film::getId).toList();
         Map<Long, Set<Director>> directorsByFilmId = new HashMap<>();
         namedJdbc.query(sql.load(FilmsSql.FIND_DIRECTORS_BY_FILM_IDS),
-                new MapSqlParameterSource("filmIds", flmIds),
+                new MapSqlParameterSource("filmIds", filmIds),
                 rs -> {
                     long filmId = rs.getLong("film_id");
-
                     Director director = new Director();
                     director.setId(rs.getLong("director_id"));
-                    director.setName(rs.getString("name"));
-
+                    director.setName(rs.getString("director_name"));
                     directorsByFilmId
                             .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
                             .add(director);
                 });
+        for (Film film : films) {
+            film.setDirectors(directorsByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
+        }
     }
 
     private void resetDirectors(Film film) {
         jdbc.update(sql.load(FilmsSql.DELETE_DIRECTORS_BY_FILM_ID), film.getId());
-        if (film.getDirectors() == null || film.getDirectors().isEmpty()) return;;
+        if (film.getDirectors() == null || film.getDirectors().isEmpty()) return;
 
         jdbc.batchUpdate(
                 sql.load(FilmsSql.ADD_DIRECTOR_BY_FILM_IDS),
@@ -208,23 +223,5 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     @Override
     public void deleteById(long filmId) {
         update(sql.load(FilmsSql.DELETE_BY_ID), filmId);
-    }
-
-
-    public Set<Director> findDirectorsByFilmId(long filmId) {
-        String sql = """
-        SELECT d.id, d.name
-        FROM directors d
-        JOIN directors_vis_films dvf ON d.id = dvf.director_id
-        WHERE dvf.film_id = ?
-        ORDER BY d.id
-        """;
-
-        return new LinkedHashSet<>(jdbc.query(sql, (rs, rowNum) -> {
-            Director director = new Director();
-            director.setId(rs.getLong("id"));
-            director.setName(rs.getString("name"));
-            return director;
-        }, filmId));
     }
 }

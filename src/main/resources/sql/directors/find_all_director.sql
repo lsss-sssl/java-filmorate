@@ -1,4 +1,3 @@
-SELECT id,
-       name
+SELECT *
 FROM directors
 ORDER BY id;

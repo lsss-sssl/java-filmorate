@@ -1,2 +1,2 @@
-INSERT INTO directors_vis_films (director_id, film_id)
+INSERT INTO films_directors (director_id, film_id)
 VALUES (?, ?);

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
-import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
@@ -16,21 +15,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class FilmController {
     private final FilmService filmService;
-    private final DirectorService service;
 
 // TODO:   GET    /films/search
 //         GET    /films/common?userId={userId}&friendId={friendId}
-//         GET    /films/director/{directorId}?sortBy=[year,likes]
-//         DELETE /films/{filmId}
 
     /**
      *     GET    /films
      *     GET    /films/{id}
      *     GET    /films/popular?count={count}
+     *     GET    /films/director/{directorId}?sortBy=[year,likes]
+     *     GET    /films/common?userId={userId}&friendId={friendId}
      *     POST   /films
      *     PUT    /films
      *     PUT    /films/{filmId}/like/{userId}
      *     DELETE /films/{filmId}/like/{userId}
+     *     DELETE /films/{filmId}
      */
 
     @GetMapping
@@ -55,11 +54,10 @@ public final class FilmController {
     }
 
     @GetMapping("/director/{directorId}")
-    public List<FilmDto> getFilmsByDirector(
+    public List<FilmDto> getByDirector(
             @PathVariable Long directorId,
-            @RequestParam String sortBy
-    ) {
-        return service.findFilmsSorted(directorId, sortBy);
+            @RequestParam String sortBy) {
+        return filmService.getByDirector(directorId, sortBy);
     }
 
     @PostMapping

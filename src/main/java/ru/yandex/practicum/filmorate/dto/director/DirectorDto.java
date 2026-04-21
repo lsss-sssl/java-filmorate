@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DirectorDto {
+public final class DirectorDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private  long id;
+    private long id;
     private String name;
 }

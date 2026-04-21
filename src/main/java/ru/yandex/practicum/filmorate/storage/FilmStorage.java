@@ -22,6 +22,10 @@ public interface FilmStorage {
 
     List<Film> findPopular(long count);
 
+    List<Film> findByDirectorIdOrderByYear(long directorId);
+
+    List<Film> findByDirectorIdOrderByLikes(long directorId);
+
     void deleteById(long filmId);
 
     List<Film> findRecommendationsByUserId(long userId);

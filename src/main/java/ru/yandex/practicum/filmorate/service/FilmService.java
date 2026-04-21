@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -22,22 +23,36 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final DirectorStorage directorStorage;
 
     public List<FilmDto> getAll() {
-        log.debug("Request to get all films");
+        log.info("Request to get all films");
         return filmStorage.findAll().stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public FilmDto getById(final long filmId) {
-        log.debug("Request to get film by id={}", filmId);
+        log.info("Request to get film by id={}", filmId);
         return FilmMapper.mapToFilmDto(findByIdOrThrow(filmId));
     }
 
     public List<FilmDto> getPopular(int count, Integer genreId, Integer year) {
-        log.debug("Request to get popular films: count={}, genreId={}, year={}", count, genreId, year);
+        log.info("Request to get popular films: count={}, genreId={}, year={}", count, genreId, year);
         return filmStorage.findPopular(count, genreId, year).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FilmDto> getByDirector(final long directorId, String sortBy) {
+        log.info("Request to get film by directorId={}, sortBy={}", directorId, sortBy);
+        ensureDirectorExists(directorId);
+        List<Film> films = switch (sortBy) {
+            case "year" -> filmStorage.findByDirectorIdOrderByYear(directorId);
+            case "likes" -> filmStorage.findByDirectorIdOrderByLikes(directorId);
+            default -> throw new IllegalArgumentException("Unknown sortBy = " + sortBy);
+        };
+        return films.stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
@@ -81,6 +96,10 @@ public class FilmService {
 
     private void ensureUserExists(final long userId) {
         userStorage.findById(userId).orElseThrow(() -> new NotFoundException("User not found by id=" + userId));
+    }
+
+    private void ensureDirectorExists(final long directorId) {
+        directorStorage.findById(directorId).orElseThrow(() -> new NotFoundException("Director not found by id=" + directorId));
     }
 
     @Transactional
