@@ -31,4 +31,6 @@ public interface FilmStorage {
     List<Film> findRecommendationsByUserId(long userId);
 
     List<Film> search(String query, boolean searchByTitle, boolean searchByDirector);
+
+    List<Film> searchCommonFilms(Long userId, Long friendId);
 }
