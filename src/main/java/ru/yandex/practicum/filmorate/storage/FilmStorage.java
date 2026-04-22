@@ -29,4 +29,6 @@ public interface FilmStorage {
     void deleteById(long filmId);
 
     List<Film> findRecommendationsByUserId(long userId);
+
+    List<Film> search(String query, boolean searchByTitle, boolean searchByDirector);
 }

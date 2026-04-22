@@ -114,4 +114,31 @@ public class FilmService {
         filmStorage.deleteById(filmId);
         log.info("Film deleted: id={}", filmId);
     }
+
+    public List<FilmDto> searchFilms(String query, String by) {
+        log.debug("Searching films: query={}, by={}", query, by);
+
+        boolean searchByTitle = false;
+        boolean searchByDirector = false;
+
+        if (by != null && !by.isBlank()) {
+            String[] parts = by.split(",");
+            for (String part : parts) {
+                String trimmed = part.trim().toLowerCase();
+                if ("title".equals(trimmed)) {
+                    searchByTitle = true;
+                } else if ("director".equals(trimmed)) {
+                    searchByDirector = true;
+                }
+            }
+        }
+
+        if (!searchByTitle && !searchByDirector) {
+            searchByTitle = true;
+        }
+
+        return filmStorage.search(query, searchByTitle, searchByDirector).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
 }
