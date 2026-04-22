@@ -96,8 +96,8 @@ public final class FilmController {
     }
 
     @GetMapping("/common")
-    public List<FilmDto> searchCommonFilms(@PathVariable Long userId,
-                                           @PathVariable Long friendId) {
+    public List<FilmDto> searchCommonFilms(@RequestParam Long userId,
+                                           @RequestParam Long friendId) {
         return filmService.searchCommonFilms(userId, friendId);
     }
 }
