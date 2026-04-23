@@ -8,8 +8,4 @@ public final class UpdateDirectorRequest {
     private final Long id;
     @NotBlank(message = "имя не должно быть пустым")
     private String name;
-
-    public  boolean hasName() {
-        return !(name == null || name.isBlank());
-    }
 }

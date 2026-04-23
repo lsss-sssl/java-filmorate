@@ -23,8 +23,6 @@ public final class DirectorMapper {
     }
 
     public static void updateDirectorFields(Director director, UpdateDirectorRequest request) {
-        if (request.hasName()) {
-            director.setName(request.getName());
-        }
+        director.setName(request.getName());
     }
 }
