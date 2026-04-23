@@ -20,7 +20,6 @@ import java.util.*;
 @Repository
 public class FilmRepository extends BaseRepository<Film> implements FilmStorage {
     private final NamedParameterJdbcTemplate namedJdbc;
-    private final RowMapper<Film> filmRowMapper;
 
     public FilmRepository(
             JdbcTemplate jdbc,
@@ -29,7 +28,6 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
             NamedParameterJdbcTemplate namedJdbc) {
         super(jdbc, mapper, sql);
         this.namedJdbc = namedJdbc;
-        this.filmRowMapper = mapper;
     }
 
     @Override
@@ -233,14 +231,11 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         if (query == null || query.isBlank()) {
             return List.of();
         }
-
         String searchPattern = query.toLowerCase();
-
         List<Film> films = findMany(
                 sql.load(FilmsSql.SEARCH_FILMS),
                 searchByTitle, searchPattern, searchByDirector, searchPattern
         );
-
         loadGenres(films);
         loadDirectors(films);
         return films;

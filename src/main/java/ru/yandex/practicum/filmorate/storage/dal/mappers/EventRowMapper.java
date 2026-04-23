@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 @Component
-public class EventRowMapper implements RowMapper<Event> {
+public final class EventRowMapper implements RowMapper<Event> {
     @Override
     public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
         Event event = new Event();

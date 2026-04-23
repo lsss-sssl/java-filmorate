@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.dto.event;
 import lombok.Data;
 
 @Data
-public class EventDto {
+public final class EventDto {
     private Long timestamp;
     private Long userId;
     private String eventType;

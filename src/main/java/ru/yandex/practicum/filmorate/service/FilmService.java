@@ -116,11 +116,9 @@ public class FilmService {
     }
 
     public List<FilmDto> searchFilms(String query, String by) {
-        log.debug("Searching films: query={}, by={}", query, by);
-
+        log.info("Searching films: query={}, by={}", query, by);
         boolean searchByTitle = false;
         boolean searchByDirector = false;
-
         if (by != null && !by.isBlank()) {
             String[] parts = by.split(",");
             for (String part : parts) {
@@ -132,17 +130,18 @@ public class FilmService {
                 }
             }
         }
-
         if (!searchByTitle && !searchByDirector) {
             searchByTitle = true;
         }
-
         return filmStorage.search(query, searchByTitle, searchByDirector).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public List<FilmDto> searchCommonFilms(Long userId, Long friendId) {
+        log.info("Searching common films: userId={}, friendId={}", userId, friendId);
+        ensureUserExists(userId);
+        ensureUserExists(friendId);
         return filmStorage.searchCommonFilms(userId, friendId).stream().map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }

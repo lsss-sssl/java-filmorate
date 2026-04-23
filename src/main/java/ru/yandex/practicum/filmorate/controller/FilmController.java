@@ -16,14 +16,12 @@ import java.util.List;
 public final class FilmController {
     private final FilmService filmService;
 
-// TODO:   GET    /films/search
-//         GET    /films/common?userId={userId}&friendId={friendId}
-
     /**
      *     GET    /films
      *     GET    /films/{id}
      *     GET    /films/popular?count={count}
      *     GET    /films/director/{directorId}?sortBy=[year,likes]
+     *     GET    /films/search?query=крад&by=director,title
      *     GET    /films/common?userId={userId}&friendId={friendId}
      *     POST   /films
      *     PUT    /films
@@ -60,6 +58,19 @@ public final class FilmController {
         return filmService.getByDirector(directorId, sortBy);
     }
 
+    @GetMapping("/search")
+    public List<FilmDto> searchFilms(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "title") String by) {
+        return filmService.searchFilms(query, by);
+    }
+
+    @GetMapping("/common")
+    public List<FilmDto> searchCommonFilms(@RequestParam Long userId,
+                                           @RequestParam Long friendId) {
+        return filmService.searchCommonFilms(userId, friendId);
+    }
+
     @PostMapping
     public FilmDto create(@Valid @RequestBody NewFilmRequest request) {
         return filmService.create(request);
@@ -86,18 +97,5 @@ public final class FilmController {
     public void deleteFilm(@PathVariable long filmId) {
 
         filmService.deleteFilm(filmId);
-    }
-
-    @GetMapping("/search")
-    public List<FilmDto> searchFilms(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "title") String by) {
-        return filmService.searchFilms(query, by);
-    }
-
-    @GetMapping("/common")
-    public List<FilmDto> searchCommonFilms(@RequestParam Long userId,
-                                           @RequestParam Long friendId) {
-        return filmService.searchCommonFilms(userId, friendId);
     }
 }

@@ -18,18 +18,17 @@ import java.util.List;
 public final class UserController {
     private final UserService userService;
 
-// TODO:   GET    /users/{id}/feed
-//         DELETE /users/{userId}
-
     /**
      *     GET    /users
      *     GET    /users/{id}
      *     GET    /users/{id}/friends
      *     GET    /users/{id}/friends/common/{friendId}
+     *     GET    /users/{id}/feed
      *     POST   /users
      *     PUT    /users
      *     PUT    /users/{id}/friends/{friendId}
      *     DELETE /users/{id}/friends/{friendId}
+     *     DELETE /users/{userId}
      */
 
     @GetMapping
