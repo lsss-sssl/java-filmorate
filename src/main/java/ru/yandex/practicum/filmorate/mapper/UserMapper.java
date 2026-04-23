@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.User;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UserMapper {
     public static User mapToUser(NewUserRequest request) {
+        checkLoginName(request);
         User user = new User();
         user.setEmail(request.getEmail());
         user.setLogin(request.getLogin());
@@ -33,5 +34,9 @@ public final class UserMapper {
         if (request.hasLogin()) user.setLogin(request.getLogin());
         if (request.hasName()) user.setName(request.getName());
         if (request.hasBirthday()) user.setBirthday(request.getBirthday());
+    }
+
+    private static void checkLoginName(NewUserRequest request) {
+        if (request.getName().isEmpty()) request.setName(request.getLogin());
     }
 }
