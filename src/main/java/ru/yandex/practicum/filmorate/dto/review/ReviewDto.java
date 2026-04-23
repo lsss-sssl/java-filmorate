@@ -9,7 +9,7 @@ public final class ReviewDto {
     private long reviewId;
     private String content;
     @JsonProperty("isPositive")
-    private Boolean isPositive;
+    private boolean positive;
     private long userId;
     private long filmId;
     private long useful;

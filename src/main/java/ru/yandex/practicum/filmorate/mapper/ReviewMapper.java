@@ -12,7 +12,7 @@ public final class ReviewMapper {
     public static Review mapToReview(NewReviewRequest request) {
         Review review = new Review();
         review.setContent(request.getContent());
-        review.setPositive(request.getIsPositive());
+        review.setPositive(request.isPositive());
         review.setUserId(request.getUserId());
         review.setFilmId(request.getFilmId());
         review.setUseful(0);
@@ -23,7 +23,7 @@ public final class ReviewMapper {
         ReviewDto dto = new ReviewDto();
         dto.setReviewId(review.getId());
         dto.setContent(review.getContent());
-        dto.setIsPositive(review.isPositive());
+        dto.setPositive(review.isPositive());
         dto.setUserId(review.getUserId());
         dto.setFilmId(review.getFilmId());
         dto.setUseful(review.getUseful());
@@ -32,7 +32,7 @@ public final class ReviewMapper {
 
     public static void updateReviewFields(Review review, UpdateReviewRequest request) {
         review.setContent(request.getContent());
-        review.setPositive(request.getIsPositive());
+        review.setPositive(request.isPositive());
         review.setUserId(request.getUserId());
         review.setFilmId(request.getFilmId());
     }

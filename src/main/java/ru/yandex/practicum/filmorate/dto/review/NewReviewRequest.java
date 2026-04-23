@@ -12,9 +12,13 @@ public final class NewReviewRequest {
     @NotNull(message = "Тип отзыва обязателен")
     @JsonProperty("isPositive")
     @NotNull
-    private Boolean isPositive;
+    private Boolean positive;
     @NotNull(message = "Id обязателен")
     private Long userId;
     @NotNull(message = "Id обязателен")
     private Long filmId;
+
+    public boolean isPositive() {
+        return positive;
+    }
 }

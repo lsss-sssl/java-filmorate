@@ -36,16 +36,22 @@ public class ReviewService {
         return ReviewMapper.mapToReviewDto(findByIdOrThrow(reviewId));
     }
 
-    public List<ReviewDto> getAllByFilmId(final long filmId, final long count) {
-        log.info("Request to get reviews for film");
+    public List<ReviewDto> getAll(Long filmId, final long count) {
+        log.info("Request to get reviews for film: filmId={}", filmId);
         ensureFilmExists(filmId);
-        return reviewStorage.findAllByFilmId(filmId, count).stream()
+        long limit = count > 0 ? count : 10;
+
+        List<Review> reviews = filmId == null
+                ? reviewStorage.findAll(limit)
+                : reviewStorage.findAllByFilmId(filmId, limit);
+
+        return reviews.stream()
                 .map(ReviewMapper::mapToReviewDto)
                 .collect(Collectors.toList());
     }
 
     public ReviewDto create(NewReviewRequest request) {
-        log.info("Creating review: filmId={}, isPositive={}", request.getFilmId(), request.getIsPositive());
+        log.info("Creating review: filmId={}, isPositive={}", request.getFilmId(), request.isPositive());
         ensureUserExists(request.getUserId());
         ensureFilmExists(request.getFilmId());
         Review review = ReviewMapper.mapToReview(request);
