@@ -245,4 +245,12 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
         loadDirectors(films);
         return films;
     }
+
+    @Override
+    public List<Film> searchCommonFilms(Long userId, Long friendId) {
+        List<Film> films = findMany(sql.load(FilmsSql.FIND_COMMON_FILMS), userId, friendId);
+        loadGenres(films);
+        loadDirectors(films);
+        return films;
+    }
 }

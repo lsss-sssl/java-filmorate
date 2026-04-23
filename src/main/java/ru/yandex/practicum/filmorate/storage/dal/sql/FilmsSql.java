@@ -17,4 +17,6 @@ public final class FilmsSql {
     public static final String FIND_BY_DIRECTOR_ID_ORDER_BY_LIKES = "sql/films/find_by_director_id_order_by_likes.sql";
 
     public static final String SEARCH_FILMS = "sql/films/search_films.sql";
+
+    public static final String FIND_COMMON_FILMS = "sql/films/find_common_films.sql";
 }

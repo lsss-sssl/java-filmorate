@@ -141,4 +141,9 @@ public class FilmService {
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
+
+    public List<FilmDto> searchCommonFilms(Long userId, Long friendId) {
+        return filmStorage.searchCommonFilms(userId, friendId).stream().map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
 }
