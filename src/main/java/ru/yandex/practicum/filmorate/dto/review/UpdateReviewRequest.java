@@ -13,7 +13,6 @@ public final class UpdateReviewRequest {
     private String content;
     @NotNull(message = "Тип отзыва обязателен")
     @JsonProperty("isPositive")
-    @NotNull
     private Boolean positive;
     @NotNull(message = "Id обязателен")
     private Long userId;

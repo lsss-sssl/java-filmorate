@@ -62,8 +62,6 @@ public class ReviewService {
 
     public ReviewDto update(UpdateReviewRequest request) {
         log.info("Updating review: id={}", request.getReviewId());
-        ensureUserExists(request.getUserId());
-        ensureFilmExists(request.getFilmId());
         Review oldReview = findByIdOrThrow(request.getReviewId());
         ReviewMapper.updateReviewFields(oldReview, request);
         reviewStorage.update(oldReview);

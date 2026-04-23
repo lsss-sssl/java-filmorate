@@ -66,8 +66,6 @@ public class ReviewRepository extends BaseRepository<Review> implements ReviewSt
                 sql.load(ReviewsSql.UPDATE),
                 review.getContent(),
                 review.isPositive(),
-                review.getUserId(),
-                review.getFilmId(),
                 review.getId()
         );
         return review;
