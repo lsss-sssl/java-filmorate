@@ -26,32 +26,4 @@ public final class UpdateFilmRequest {
     private Mpa mpa;
     private Set<Genre> genres;
     private Set<Director> directors;
-
-    public boolean hasName() {
-        return !(name == null || name.isBlank());
-    }
-
-    public boolean hasDescription() {
-        return !(description == null || description.isBlank());
-    }
-
-    public boolean hasReleaseDate() {
-        return !(releaseDate == null);
-    }
-
-    public boolean hasDuration() {
-        return !(duration == null);
-    }
-
-    public boolean hasMpa() {
-        return !(mpa == null);
-    }
-
-    public boolean hasGenres() {
-        return !(genres == null || genres.isEmpty());
-    }
-
-    public boolean hasDirectors() {
-        return !(directors == null || directors.isEmpty());
-    }
 }

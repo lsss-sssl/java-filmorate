@@ -61,12 +61,12 @@ public final class FilmMapper {
     }
 
     public static void updateFilmFields(Film film, UpdateFilmRequest request) {
-        if (request.hasName()) film.setName(request.getName());
-        if (request.hasDescription()) film.setDescription(request.getDescription());
-        if (request.hasReleaseDate()) film.setReleaseDate(request.getReleaseDate());
-        if (request.hasDuration()) film.setDuration(request.getDuration());
-        if (request.hasMpa()) film.setMpa(request.getMpa());
-        if (request.hasGenres()) film.setGenres(request.getGenres());
-        if (request.hasDirectors()) film.setDirectors(request.getDirectors());
+        film.setName(request.getName());
+        film.setDescription(request.getDescription());
+        film.setReleaseDate(request.getReleaseDate());
+        film.setDuration(request.getDuration());
+        film.setMpa(request.getMpa());
+        film.setGenres(request.getGenres());
+        film.setDirectors(request.getDirectors());
     }
 }
