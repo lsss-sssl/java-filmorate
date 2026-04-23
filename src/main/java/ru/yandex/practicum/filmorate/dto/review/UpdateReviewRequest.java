@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public final class UpdateReviewRequest {
     @NotNull(message = "Id обязателен")
-    private long reviewId;
+    private Long reviewId;
     @NotBlank(message = "Текст отзыва не может быть пустым")
     private String content;
     @NotNull(message = "Тип отзыва обязателен")

@@ -36,15 +36,13 @@ public class ReviewService {
         return ReviewMapper.mapToReviewDto(findByIdOrThrow(reviewId));
     }
 
-    public List<ReviewDto> getAll(Long filmId, final long count) {
+    public List<ReviewDto> getAll(Long filmId, long count) {
         log.info("Request to get reviews for film: filmId={}", filmId);
-        ensureFilmExists(filmId);
         long limit = count > 0 ? count : 10;
-
+        if (filmId != null) ensureFilmExists(filmId);
         List<Review> reviews = filmId == null
                 ? reviewStorage.findAll(limit)
                 : reviewStorage.findAllByFilmId(filmId, limit);
-
         return reviews.stream()
                 .map(ReviewMapper::mapToReviewDto)
                 .collect(Collectors.toList());
@@ -64,6 +62,8 @@ public class ReviewService {
 
     public ReviewDto update(UpdateReviewRequest request) {
         log.info("Updating review: id={}", request.getReviewId());
+        ensureUserExists(request.getUserId());
+        ensureFilmExists(request.getFilmId());
         Review oldReview = findByIdOrThrow(request.getReviewId());
         ReviewMapper.updateReviewFields(oldReview, request);
         reviewStorage.update(oldReview);
@@ -128,10 +128,10 @@ public class ReviewService {
     }
 
     private void ensureFilmExists(final long filmId) {
-        filmStorage.findById(filmId).orElseThrow(() -> new NotFoundException("Review not found by id=" + filmId));
+        filmStorage.findById(filmId).orElseThrow(() -> new NotFoundException("Film not found by id=" + filmId));
     }
 
     private void ensureUserExists(final long userId) {
-        userStorage.findById(userId).orElseThrow(() -> new NotFoundException("Review not found by id=" + userId));
+        userStorage.findById(userId).orElseThrow(() -> new NotFoundException("User not found by id=" + userId));
     }
 }
