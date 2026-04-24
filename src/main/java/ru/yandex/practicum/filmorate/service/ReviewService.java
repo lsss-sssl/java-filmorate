@@ -49,7 +49,7 @@ public class ReviewService {
     }
 
     public ReviewDto create(NewReviewRequest request) {
-        log.info("Creating review: filmId={}, isPositive={}", request.getFilmId(), request.isPositive());
+        log.info("Creating review: filmId={}, isPositive={}", request.getFilmId(), request.getPositive());
         ensureUserExists(request.getUserId());
         ensureFilmExists(request.getFilmId());
         Review review = ReviewMapper.mapToReview(request);

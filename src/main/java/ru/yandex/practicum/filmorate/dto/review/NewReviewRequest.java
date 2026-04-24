@@ -18,8 +18,4 @@ public final class NewReviewRequest {
     private Long userId;
     @NotNull(message = "Id обязателен")
     private Long filmId;
-
-    public boolean isPositive() {
-        return positive;
-    }
 }
