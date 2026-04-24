@@ -178,9 +178,10 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                             .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
                             .add(Genre.fromId(genreId));
                 });
-        for (Film film : films) {
-            film.setGenres(genresByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
-        }
+        films.forEach(film -> {
+            Set<Genre> genres = genresByFilmId.get(film.getId());
+            film.setGenres(genres != null ? genres : Collections.emptySet());
+        });
     }
 
     private void resetDirectors(Film film) {
@@ -217,9 +218,10 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                             .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
                             .add(director);
                 });
-        for (Film film : films) {
-            film.setDirectors(directorsByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
-        }
+        films.forEach(film -> {
+            Set<Director> directors = directorsByFilmId.get(film.getId());
+            film.setDirectors(directors != null ? directors : Collections.emptySet());
+        });
     }
 
     @Override
