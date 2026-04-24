@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.util.SqlLoader;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,23 +40,23 @@ public class FilmRepositoryTest {
     private final UserRepository userRepository;
 
     private Film makeFilm(String name, Mpa mpa, Set<Genre> genres) {
-        Film film = new Film();
-        film.setName(name);
-        film.setDescription("Description");
-        film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(120);
-        film.setMpa(mpa);
-        film.setGenres(genres);
-        return film;
+        return Film.builder()
+                .name(name)
+                .description("Description")
+                .releaseDate(LocalDate.of(2000, 1, 1))
+                .duration(120)
+                .mpa(mpa)
+                .genres(genres)
+                .build();
     }
 
     private User makeUser(String email, String login) {
-        User user = new User();
-        user.setEmail(email);
-        user.setLogin(login);
-        user.setName(login);
-        user.setBirthday(LocalDate.of(2000, 1, 1));
-        return user;
+        return User.builder()
+                .email(email)
+                .login(login)
+                .name(login)
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
     }
 
     @Test
@@ -106,7 +107,7 @@ public class FilmRepositoryTest {
         assertThat(popularAfterLike.getFirst().getId()).isEqualTo(film.getId());
         filmRepository.deleteLike(film.getId(), user.getId());
         List<Film> popularAfterDelete = filmRepository.findPopular(10);
-        assertThat(popularAfterDelete.stream().filter(f -> f.getId() == (film.getId())).findFirst()).isPresent();
+        assertThat(popularAfterDelete.stream().filter(f -> Objects.equals(f.getId(), film.getId())).findFirst()).isPresent();
     }
 
     @Test

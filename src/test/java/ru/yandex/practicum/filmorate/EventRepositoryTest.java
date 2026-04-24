@@ -36,22 +36,26 @@ public class EventRepositoryTest {
     private final UserStorage userRepository;
 
     private User makeUser(String email, String login) {
-        User user = new User();
-        user.setEmail(email);
-        user.setLogin(login);
-        user.setName(login);
-        user.setBirthday(LocalDate.of(2000, 1, 1));
-        return user;
+        return User.builder()
+                .email(email)
+                .login(login)
+                .name(login)
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
     }
 
-    private Event makeEvent(long timestamp, long userId, String eventType, String operation, long entityId) {
-        Event event = new Event();
-        event.setTimestamp(timestamp);
-        event.setUserId(userId);
-        event.setEventType(eventType);
-        event.setOperation(operation);
-        event.setEntityId(entityId);
-        return event;
+    private Event makeEvent(long timestamp,
+                            long userId,
+                            String eventType,
+                            String operation,
+                            long entityId) {
+        return Event.builder()
+                .timestamp(timestamp)
+                .userId(userId)
+                .eventType(eventType)
+                .operation(operation)
+                .entityId(entityId)
+                .build();
     }
 
     @Test
