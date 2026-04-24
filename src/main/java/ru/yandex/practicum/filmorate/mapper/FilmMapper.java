@@ -18,46 +18,55 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FilmMapper {
     public static Film mapToFilm(NewFilmRequest request) {
-        Film film = new Film();
-        film.setName(request.getName());
-        film.setDescription(request.getDescription());
-        film.setReleaseDate(request.getReleaseDate());
-        film.setDuration(request.getDuration());
-        film.setMpa(request.getMpa());
-        film.setGenres(request.getGenres());
-        film.setDirectors(request.getDirectors());
-        return film;
+        return Film.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .releaseDate(request.getReleaseDate())
+                .duration(request.getDuration())
+                .mpa(request.getMpa())
+                .genres(request.getGenres())
+                .directors(request.getDirectors())
+                .build();
     }
 
     public static FilmDto mapToFilmDto(Film film) {
-        FilmDto dto = new FilmDto();
-        dto.setId(film.getId());
-        dto.setName(film.getName());
-        dto.setDescription(film.getDescription());
-        dto.setReleaseDate(film.getReleaseDate());
-        dto.setDuration(film.getDuration());
-        dto.setMpa(
-                film.getMpa() != null
-                        ? new MpaDto(film.getMpa().getId(), film.getMpa().getName())
-                        : null
-        );
-        dto.setGenres(
-                film.getGenres() != null
-                        ? film.getGenres().stream()
-                          .sorted(Comparator.comparingLong(Genre::getId))
-                          .map(g -> new GenreDto(g.getId(), g.getName()))
-                          .toList()
-                        : List.of()
-        );
-        dto.setDirectors(
-                film.getDirectors() != null
-                        ? film.getDirectors().stream()
-                          .sorted(Comparator.comparingLong(Director::getId))
-                          .map(d -> new DirectorDto(d.getId(), d.getName()))
-                          .toList()
-                        : List.of()
-        );
-        return dto;
+        return FilmDto.builder()
+                .id(film.getId())
+                .name(film.getName())
+                .description(film.getDescription())
+                .releaseDate(film.getReleaseDate())
+                .duration(film.getDuration())
+                .mpa(
+                        film.getMpa() != null
+                                ? MpaDto.builder()
+                                  .id(film.getMpa().getId())
+                                  .name(film.getMpa().getName())
+                                  .build()
+                                : null
+                )
+                .genres(
+                        film.getGenres() != null
+                                ? film.getGenres().stream()
+                                  .sorted(Comparator.comparingLong(Genre::getId))
+                                  .map(g -> GenreDto.builder()
+                                            .id(g.getId())
+                                            .name(g.getName())
+                                            .build())
+                                  .toList()
+                                : List.of()
+                )
+                .directors(
+                        film.getDirectors() != null
+                                ? film.getDirectors().stream()
+                                  .sorted(Comparator.comparingLong(Director::getId))
+                                  .map(d -> DirectorDto.builder()
+                                            .id(d.getId())
+                                            .name(d.getName())
+                                            .build())
+                                  .toList()
+                                : List.of()
+                )
+                .build();
     }
 
     public static void updateFilmFields(Film film, UpdateFilmRequest request) {

@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 public final class Director {
-    private Long id;
+    private long id;
     private String name;
 }

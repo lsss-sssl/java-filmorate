@@ -16,6 +16,11 @@ import java.util.List;
 public final class MpaController {
     private final MpaService mpaService;
 
+    /**
+     *     GET    /mpa
+     *     GET    /mpa/{id}
+     */
+
     @GetMapping
     public List<MpaDto> getUsers() {
         return mpaService.getAll();

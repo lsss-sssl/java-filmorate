@@ -10,24 +10,24 @@ import ru.yandex.practicum.filmorate.model.Review;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReviewMapper {
     public static Review mapToReview(NewReviewRequest request) {
-        Review review = new Review();
-        review.setContent(request.getContent());
-        review.setPositive(request.isPositive());
-        review.setUserId(request.getUserId());
-        review.setFilmId(request.getFilmId());
-        review.setUseful(0);
-        return review;
+        return Review.builder()
+                .content(request.getContent())
+                .positive(request.isPositive())
+                .userId(request.getUserId())
+                .filmId(request.getFilmId())
+                .useful(0)
+                .build();
     }
 
     public static ReviewDto mapToReviewDto(Review review) {
-        ReviewDto dto = new ReviewDto();
-        dto.setReviewId(review.getId());
-        dto.setContent(review.getContent());
-        dto.setPositive(review.isPositive());
-        dto.setUserId(review.getUserId());
-        dto.setFilmId(review.getFilmId());
-        dto.setUseful(review.getUseful());
-        return dto;
+        return ReviewDto.builder()
+                .reviewId(review.getId())
+                .content(review.getContent())
+                .positive(review.isPositive())
+                .userId(review.getUserId())
+                .filmId(review.getFilmId())
+                .useful(review.getUseful())
+                .build();
     }
 
     public static void updateReviewFields(Review review, UpdateReviewRequest request) {

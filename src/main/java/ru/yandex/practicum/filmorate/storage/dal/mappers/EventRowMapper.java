@@ -12,14 +12,14 @@ import java.sql.Timestamp;
 public final class EventRowMapper implements RowMapper<Event> {
     @Override
     public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Event event = new Event();
-        event.setEventId(rs.getLong("id"));
         Timestamp ts = rs.getTimestamp("timestamp");
-        event.setTimestamp(ts != null ? ts.getTime() : null);
-        event.setUserId(rs.getLong("user_id"));
-        event.setEventType(rs.getString("event_type"));
-        event.setOperation(rs.getString("operation"));
-        event.setEntityId(rs.getLong("entity_id"));
-        return event;
+        return Event.builder()
+                .eventId(rs.getLong("id"))
+                .timestamp(ts != null ? ts.getTime() : null)
+                .userId(rs.getLong("user_id"))
+                .eventType(rs.getString("event_type"))
+                .operation(rs.getString("operation"))
+                .entityId(rs.getLong("entity_id"))
+                .build();
     }
 }

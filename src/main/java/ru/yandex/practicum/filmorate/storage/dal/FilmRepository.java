@@ -178,10 +178,9 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                             .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
                             .add(Genre.fromId(genreId));
                 });
-        films.forEach(film -> {
-            Set<Genre> genres = genresByFilmId.get(film.getId());
-            film.setGenres(genres != null ? genres : Collections.emptySet());
-        });
+        for (Film film : films) {
+            film.setGenres(genresByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
+        }
     }
 
     private void resetDirectors(Film film) {
@@ -210,18 +209,16 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                 new MapSqlParameterSource("filmIds", filmIds),
                 rs -> {
                     long filmId = rs.getLong("film_id");
-                    Director director = Director.builder()
-                            .id(rs.getLong("director_id"))
-                            .name(rs.getString("director_name"))
-                            .build();
+                    Director director = new Director();
+                    director.setId(rs.getLong("director_id"));
+                    director.setName(rs.getString("director_name"));
                     directorsByFilmId
                             .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
                             .add(director);
                 });
-        films.forEach(film -> {
-            Set<Director> directors = directorsByFilmId.get(film.getId());
-            film.setDirectors(directors != null ? directors : Collections.emptySet());
-        });
+        for (Film film : films) {
+            film.setDirectors(directorsByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>()));
+        }
     }
 
     @Override
