@@ -16,18 +16,6 @@ import java.util.List;
 public final class ReviewController {
     private final ReviewService reviewService;
 
-    /**
-     * GET    /reviews/{id}
-     * GET    /reviews?filmId={filmId}&count={count}
-     * POST   /reviews
-     * PUT    /reviews
-     * PUT    /reviews/{reviewId}/like/{userId}
-     * PUT    /reviews/{reviewId}/dislike/{userId}
-     * DELETE /reviews/{reviewId}/like/{userId}
-     * DELETE /reviews/{reviewId}/dislike/{userId}
-     * DELETE /reviews/{id}
-     */
-
     @GetMapping("/{id}")
     public ReviewDto getById(@PathVariable final long id) {
         return reviewService.getById(id);

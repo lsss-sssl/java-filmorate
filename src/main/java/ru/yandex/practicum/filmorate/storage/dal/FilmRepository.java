@@ -209,9 +209,10 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                 new MapSqlParameterSource("filmIds", filmIds),
                 rs -> {
                     long filmId = rs.getLong("film_id");
-                    Director director = new Director();
-                    director.setId(rs.getLong("director_id"));
-                    director.setName(rs.getString("director_name"));
+                    Director director = Director.builder()
+                            .id(rs.getLong("director_id"))
+                            .name(rs.getString("director_name"))
+                            .build();
                     directorsByFilmId
                             .computeIfAbsent(filmId, id -> new LinkedHashSet<>())
                             .add(director);

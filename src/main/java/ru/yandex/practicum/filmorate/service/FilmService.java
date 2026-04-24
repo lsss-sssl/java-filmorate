@@ -40,9 +40,10 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(findByIdOrThrow(filmId));
     }
 
-    public List<FilmDto> getPopular(int count, Integer genreId, Integer year) {
+    public List<FilmDto> getPopular(Integer count, Integer genreId, Integer year) {
         log.info("Request to get popular films: count={}, genreId={}, year={}", count, genreId, year);
-        return filmStorage.findPopular(count, genreId, year).stream()
+        int limit = (count != null && count > 0) ? count : 10000;
+        return filmStorage.findPopular(limit, genreId, year).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }

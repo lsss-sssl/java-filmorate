@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode
 public final class Review {
-    private long id;
+    private Long id;
     private String content;
     private boolean positive;
     private long userId;

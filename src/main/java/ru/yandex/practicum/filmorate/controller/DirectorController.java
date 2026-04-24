@@ -16,14 +16,6 @@ import java.util.List;
 public final class DirectorController {
     private final DirectorService directorService;
 
-    /**
-     *     GET    /directors
-     *     GET    /directors/{id}
-     *     POST   /directors
-     *     PUT    /directors
-     *     DELETE /directors/{id}
-     */
-
     @GetMapping
     public List<DirectorDto> getAll() {
         return directorService.getAll();
