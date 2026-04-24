@@ -28,6 +28,9 @@ public class FilmService {
     private final DirectorStorage directorStorage;
     private final EventStorage eventStorage;
 
+    private static final String SEARCH_BY_TITLE = "title";
+    private static final String SEARCH_BY_DIRECTOR = "director";
+
     public List<FilmDto> getAll() {
         log.info("Request to get all films");
         return filmStorage.findAll().stream()
@@ -124,9 +127,9 @@ public class FilmService {
             String[] parts = by.split(",");
             for (String part : parts) {
                 String trimmed = part.trim().toLowerCase();
-                if ("title".equals(trimmed)) {
+                if (SEARCH_BY_TITLE.equals(trimmed)) {
                     searchByTitle = true;
-                } else if ("director".equals(trimmed)) {
+                } else if (SEARCH_BY_DIRECTOR.equals(trimmed)) {
                     searchByDirector = true;
                 }
             }
