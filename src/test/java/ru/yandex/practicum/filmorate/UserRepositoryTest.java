@@ -32,12 +32,12 @@ public class UserRepositoryTest {
     private final UserStorage userRepository;
 
     private User makeUser(String email, String login) {
-        User user = new User();
-        user.setEmail(email);
-        user.setLogin(login);
-        user.setName(login);
-        user.setBirthday(LocalDate.of(2000, 1, 1));
-        return user;
+        return User.builder()
+                .email(email)
+                .login(login)
+                .name(login)
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
     }
 
     @Test

@@ -16,16 +16,6 @@ import java.util.List;
 public final class FilmController {
     private final FilmService filmService;
 
-    /**
-     *     GET    /films
-     *     GET    /films/{id}
-     *     GET    /films/popular?count={count}
-     *     POST   /films
-     *     PUT    /films
-     *     PUT    /films/{filmId}/like/{userId}
-     *     DELETE /films/{filmId}/like/{userId}
-     */
-
     @GetMapping
     public List<FilmDto> getAll() {
         return filmService.getAll();
@@ -37,8 +27,31 @@ public final class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<FilmDto> getPopular(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getPopular(count);
+    public List<FilmDto> getPopular(
+            @RequestParam(required = false) Integer count,
+            @RequestParam(required = false) Integer genreId,
+            @RequestParam(required = false) Integer year) {
+        return filmService.getPopular(count, genreId, year);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<FilmDto> getByDirector(
+            @PathVariable Long directorId,
+            @RequestParam String sortBy) {
+        return filmService.getByDirector(directorId, sortBy);
+    }
+
+    @GetMapping("/search")
+    public List<FilmDto> searchFilms(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "title") String by) {
+        return filmService.searchFilms(query, by);
+    }
+
+    @GetMapping("/common")
+    public List<FilmDto> searchCommonFilms(@RequestParam Long userId,
+                                           @RequestParam Long friendId) {
+        return filmService.searchCommonFilms(userId, friendId);
     }
 
     @PostMapping
@@ -61,5 +74,11 @@ public final class FilmController {
     public void dislike(@PathVariable final long filmId,
                         @PathVariable final long userId) {
         filmService.dislike(filmId, userId);
+    }
+
+    @DeleteMapping("/{filmId}")
+    public void deleteFilm(@PathVariable long filmId) {
+
+        filmService.deleteFilm(filmId);
     }
 }
