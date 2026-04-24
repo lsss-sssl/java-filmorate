@@ -16,20 +16,6 @@ import java.util.List;
 public final class FilmController {
     private final FilmService filmService;
 
-    /**
-     *     GET    /films
-     *     GET    /films/{id}
-     *     GET    /films/popular?count={count}
-     *     GET    /films/director/{directorId}?sortBy=[year,likes]
-     *     GET    /films/search?query=крад&by=director,title
-     *     GET    /films/common?userId={userId}&friendId={friendId}
-     *     POST   /films
-     *     PUT    /films
-     *     PUT    /films/{filmId}/like/{userId}
-     *     DELETE /films/{filmId}/like/{userId}
-     *     DELETE /films/{filmId}
-     */
-
     @GetMapping
     public List<FilmDto> getAll() {
         return filmService.getAll();
@@ -45,10 +31,7 @@ public final class FilmController {
             @RequestParam(required = false) Integer count,
             @RequestParam(required = false) Integer genreId,
             @RequestParam(required = false) Integer year) {
-
-        int limit = (count != null && count > 0) ? count : 10000;
-
-        return filmService.getPopular(limit, genreId, year);
+        return filmService.getPopular(count, genreId, year);
     }
 
     @GetMapping("/director/{directorId}")

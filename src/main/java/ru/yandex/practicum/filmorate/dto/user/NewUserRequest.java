@@ -3,12 +3,14 @@ package ru.yandex.practicum.filmorate.dto.user;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
+import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validation.annotation.NoSpaces;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
 public final class NewUserRequest {
     @Email(message = "Email должен быть корректным")
     @NotBlank(message = "Email не может быть пустым")

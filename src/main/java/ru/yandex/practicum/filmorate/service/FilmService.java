@@ -28,6 +28,9 @@ public class FilmService {
     private final DirectorStorage directorStorage;
     private final EventStorage eventStorage;
 
+    private static final String SEARCH_BY_TITLE = "title";
+    private static final String SEARCH_BY_DIRECTOR = "director";
+
     public List<FilmDto> getAll() {
         log.info("Request to get all films");
         return filmStorage.findAll().stream()
@@ -40,9 +43,10 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(findByIdOrThrow(filmId));
     }
 
-    public List<FilmDto> getPopular(int count, Integer genreId, Integer year) {
+    public List<FilmDto> getPopular(Integer count, Integer genreId, Integer year) {
         log.info("Request to get popular films: count={}, genreId={}, year={}", count, genreId, year);
-        return filmStorage.findPopular(count, genreId, year).stream()
+        int limit = (count != null && count > 0) ? count : 10000;
+        return filmStorage.findPopular(limit, genreId, year).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
@@ -123,9 +127,9 @@ public class FilmService {
             String[] parts = by.split(",");
             for (String part : parts) {
                 String trimmed = part.trim().toLowerCase();
-                if ("title".equals(trimmed)) {
+                if (SEARCH_BY_TITLE.equals(trimmed)) {
                     searchByTitle = true;
-                } else if ("director".equals(trimmed)) {
+                } else if (SEARCH_BY_DIRECTOR.equals(trimmed)) {
                     searchByDirector = true;
                 }
             }

@@ -10,16 +10,16 @@ import ru.yandex.practicum.filmorate.model.Director;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DirectorMapper {
     public static Director mapToDirector(NewDirectorRequest request) {
-        Director director = new Director();
-        director.setName(request.getName());
-        return director;
+        return Director.builder()
+                .name(request.getName())
+                .build();
     }
 
     public static DirectorDto mapToDirectorDto(Director director) {
-        DirectorDto dto = new DirectorDto();
-        dto.setId(director.getId());
-        dto.setName(director.getName());
-        return dto;
+        return DirectorDto.builder()
+                .id(director.getId())
+                .name(director.getName())
+                .build();
     }
 
     public static void updateDirectorFields(Director director, UpdateDirectorRequest request) {
