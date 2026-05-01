@@ -3,14 +3,18 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.mapper.EventMapper;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,22 +25,41 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final DirectorStorage directorStorage;
+    private final EventStorage eventStorage;
+
+    private static final String SEARCH_BY_TITLE = "title";
+    private static final String SEARCH_BY_DIRECTOR = "director";
 
     public List<FilmDto> getAll() {
-        log.debug("Request to get all films");
+        log.info("Request to get all films");
         return filmStorage.findAll().stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public FilmDto getById(final long filmId) {
-        log.debug("Request to get film by id={}", filmId);
+        log.info("Request to get film by id={}", filmId);
         return FilmMapper.mapToFilmDto(findByIdOrThrow(filmId));
     }
 
-    public List<FilmDto> getPopular(final int count) {
-        log.debug("Request to get popular films, count={}", count);
-        return filmStorage.findPopular(count).stream()
+    public List<FilmDto> getPopular(Integer count, Integer genreId, Integer year) {
+        log.info("Request to get popular films: count={}, genreId={}, year={}", count, genreId, year);
+        int limit = (count != null && count > 0) ? count : 10000;
+        return filmStorage.findPopular(limit, genreId, year).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FilmDto> getByDirector(final long directorId, String sortBy) {
+        log.info("Request to get film by directorId={}, sortBy={}", directorId, sortBy);
+        ensureDirectorExists(directorId);
+        List<Film> films = switch (sortBy) {
+            case "year" -> filmStorage.findByDirectorIdOrderByYear(directorId);
+            case "likes" -> filmStorage.findByDirectorIdOrderByLikes(directorId);
+            default -> throw new IllegalArgumentException("Unknown sortBy = " + sortBy);
+        };
+        return films.stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
@@ -63,6 +86,7 @@ public class FilmService {
         findByIdOrThrow(filmId);
         ensureUserExists(userId);
         filmStorage.addLike(filmId, userId);
+        eventStorage.save(EventMapper.mapToEvent(userId, "LIKE", "ADD", filmId));
         log.info("Like added: filmId={}, userId={}", filmId, userId);
     }
 
@@ -71,6 +95,7 @@ public class FilmService {
         findByIdOrThrow(filmId);
         ensureUserExists(userId);
         filmStorage.deleteLike(filmId, userId);
+        eventStorage.save(EventMapper.mapToEvent(userId, "LIKE", "REMOVE", filmId));
         log.info("Like removed: filmId={}, userId={}", filmId, userId);
     }
 
@@ -80,5 +105,48 @@ public class FilmService {
 
     private void ensureUserExists(final long userId) {
         userStorage.findById(userId).orElseThrow(() -> new NotFoundException("User not found by id=" + userId));
+    }
+
+    private void ensureDirectorExists(final long directorId) {
+        directorStorage.findById(directorId).orElseThrow(() -> new NotFoundException("Director not found by id=" + directorId));
+    }
+
+    @Transactional
+    public void deleteFilm(long filmId) {
+        log.info("Deleting film: id={}", filmId);
+        findByIdOrThrow(filmId);
+        filmStorage.deleteById(filmId);
+        log.info("Film deleted: id={}", filmId);
+    }
+
+    public List<FilmDto> searchFilms(String query, String by) {
+        log.info("Searching films: query={}, by={}", query, by);
+        boolean searchByTitle = false;
+        boolean searchByDirector = false;
+        if (by != null && !by.isBlank()) {
+            String[] parts = by.split(",");
+            for (String part : parts) {
+                String trimmed = part.trim().toLowerCase();
+                if (SEARCH_BY_TITLE.equals(trimmed)) {
+                    searchByTitle = true;
+                } else if (SEARCH_BY_DIRECTOR.equals(trimmed)) {
+                    searchByDirector = true;
+                }
+            }
+        }
+        if (!searchByTitle && !searchByDirector) {
+            searchByTitle = true;
+        }
+        return filmStorage.search(query, searchByTitle, searchByDirector).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FilmDto> searchCommonFilms(Long userId, Long friendId) {
+        log.info("Searching common films: userId={}, friendId={}", userId, friendId);
+        ensureUserExists(userId);
+        ensureUserExists(friendId);
+        return filmStorage.searchCommonFilms(userId, friendId).stream().map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
     }
 }

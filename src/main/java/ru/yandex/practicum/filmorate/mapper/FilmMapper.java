@@ -2,11 +2,13 @@ package ru.yandex.practicum.filmorate.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.mpa.MpaDto;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -16,45 +18,64 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FilmMapper {
     public static Film mapToFilm(NewFilmRequest request) {
-        Film film = new Film();
+        return Film.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .releaseDate(request.getReleaseDate())
+                .duration(request.getDuration())
+                .mpa(request.getMpa())
+                .genres(request.getGenres())
+                .directors(request.getDirectors())
+                .build();
+    }
+
+    public static FilmDto mapToFilmDto(Film film) {
+        return FilmDto.builder()
+                .id(film.getId())
+                .name(film.getName())
+                .description(film.getDescription())
+                .releaseDate(film.getReleaseDate())
+                .duration(film.getDuration())
+                .mpa(
+                        film.getMpa() != null
+                                ? MpaDto.builder()
+                                  .id(film.getMpa().getId())
+                                  .name(film.getMpa().getName())
+                                  .build()
+                                : null
+                )
+                .genres(
+                        film.getGenres() != null
+                                ? film.getGenres().stream()
+                                  .sorted(Comparator.comparingLong(Genre::getId))
+                                  .map(g -> GenreDto.builder()
+                                            .id(g.getId())
+                                            .name(g.getName())
+                                            .build())
+                                  .toList()
+                                : List.of()
+                )
+                .directors(
+                        film.getDirectors() != null
+                                ? film.getDirectors().stream()
+                                  .sorted(Comparator.comparingLong(Director::getId))
+                                  .map(d -> DirectorDto.builder()
+                                            .id(d.getId())
+                                            .name(d.getName())
+                                            .build())
+                                  .toList()
+                                : List.of()
+                )
+                .build();
+    }
+
+    public static void updateFilmFields(Film film, UpdateFilmRequest request) {
         film.setName(request.getName());
         film.setDescription(request.getDescription());
         film.setReleaseDate(request.getReleaseDate());
         film.setDuration(request.getDuration());
         film.setMpa(request.getMpa());
         film.setGenres(request.getGenres());
-        return film;
-    }
-
-    public static FilmDto mapToFilmDto(Film film) {
-        FilmDto dto = new FilmDto();
-        dto.setId(film.getId());
-        dto.setName(film.getName());
-        dto.setDescription(film.getDescription());
-        dto.setReleaseDate(film.getReleaseDate());
-        dto.setDuration(film.getDuration());
-        dto.setMpa(
-                film.getMpa() != null
-                        ? new MpaDto(film.getMpa().getId(), film.getMpa().getName())
-                        : null
-        );
-        dto.setGenres(
-                film.getGenres() != null
-                        ? film.getGenres().stream()
-                          .sorted(Comparator.comparingLong(Genre::getId))
-                          .map(g -> new GenreDto(g.getId(), g.getName()))
-                          .toList()
-                        : List.of()
-        );
-        return dto;
-    }
-
-    public static void updateFilmFields(Film film, UpdateFilmRequest request) {
-        if (request.hasName()) film.setName(request.getName());
-        if (request.hasDescription()) film.setDescription(request.getDescription());
-        if (request.hasReleaseDate()) film.setReleaseDate(request.getReleaseDate());
-        if (request.hasDuration()) film.setDuration(request.getDuration());
-        if (request.hasMpa()) film.setMpa(request.getMpa());
-        if (request.hasGenres()) film.setGenres(request.getGenres());
+        film.setDirectors(request.getDirectors());
     }
 }

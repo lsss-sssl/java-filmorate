@@ -5,20 +5,22 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
 public final class FilmRowMapper implements RowMapper<Film> {
     @Override
-    public Film mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        Film film = new Film();
-        film.setId(resultSet.getLong("id"));
-        film.setName(resultSet.getString("name"));
-        film.setDescription(resultSet.getString("description"));
-        film.setReleaseDate(resultSet.getDate("release_date").toLocalDate());
-        film.setDuration(resultSet.getInt("duration"));
-        film.setMpa(Mpa.fromId(resultSet.getLong("mpa_id")));
-        return film;
+    public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Date releaseDate = rs.getDate("release_date");
+        return Film.builder()
+                .id(rs.getLong("id"))
+                .name(rs.getString("name"))
+                .description(rs.getString("description"))
+                .releaseDate(releaseDate != null ? releaseDate.toLocalDate() : null)
+                .duration(rs.getInt("duration"))
+                .mpa(Mpa.fromId(rs.getLong("mpa_id")))
+                .build();
     }
 }

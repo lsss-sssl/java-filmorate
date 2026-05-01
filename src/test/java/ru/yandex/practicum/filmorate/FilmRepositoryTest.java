@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.util.SqlLoader;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,28 +35,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         SqlLoader.class
 })
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class FiimRepositoryTest {
+public class FilmRepositoryTest {
     private final FilmRepository filmRepository;
     private final UserRepository userRepository;
 
     private Film makeFilm(String name, Mpa mpa, Set<Genre> genres) {
-        Film film = new Film();
-        film.setName(name);
-        film.setDescription("Description");
-        film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(120);
-        film.setMpa(mpa);
-        film.setGenres(genres);
-        return film;
+        return Film.builder()
+                .name(name)
+                .description("Description")
+                .releaseDate(LocalDate.of(2000, 1, 1))
+                .duration(120)
+                .mpa(mpa)
+                .genres(genres)
+                .build();
     }
 
     private User makeUser(String email, String login) {
-        User user = new User();
-        user.setEmail(email);
-        user.setLogin(login);
-        user.setName(login);
-        user.setBirthday(LocalDate.of(2000, 1, 1));
-        return user;
+        return User.builder()
+                .email(email)
+                .login(login)
+                .name(login)
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
     }
 
     @Test
@@ -106,7 +107,7 @@ public class FiimRepositoryTest {
         assertThat(popularAfterLike.getFirst().getId()).isEqualTo(film.getId());
         filmRepository.deleteLike(film.getId(), user.getId());
         List<Film> popularAfterDelete = filmRepository.findPopular(10);
-        assertThat(popularAfterDelete.stream().filter(f -> f.getId().equals(film.getId())).findFirst()).isPresent();
+        assertThat(popularAfterDelete.stream().filter(f -> Objects.equals(f.getId(), film.getId())).findFirst()).isPresent();
     }
 
     @Test
@@ -129,5 +130,23 @@ public class FiimRepositoryTest {
                 .toList()
                 .containsAll(List.of(film2.getId(), film3.getId(), film1.getId()))
         );
+    }
+
+    @Test
+    void shouldFindRecommendationsByUserId() {
+        User user1 = userRepository.save(makeUser("rec1@example.com", "rec1"));
+        User user2 = userRepository.save(makeUser("rec2@example.com", "rec2"));
+
+        Film filmA = filmRepository.save(makeFilm("Rec A", Mpa.G, Set.of()));
+        Film filmB = filmRepository.save(makeFilm("Rec B", Mpa.G, Set.of()));
+
+        filmRepository.addLike(filmA.getId(), user1.getId());
+        filmRepository.addLike(filmA.getId(), user2.getId());
+        filmRepository.addLike(filmB.getId(), user2.getId());
+
+        List<Film> recommendations = filmRepository.findRecommendationsByUserId(user1.getId());
+
+        assertThat(recommendations.size()).isEqualTo(1);
+        assertThat(recommendations.getFirst().getId()).isEqualTo(filmB.getId());
     }
 }

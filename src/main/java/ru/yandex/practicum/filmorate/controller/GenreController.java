@@ -16,11 +16,6 @@ import java.util.List;
 public final class GenreController {
     private final GenreService genreService;
 
-    /**
-     *     GET    /genres
-     *     GET    /genres/{id}
-     */
-
     @GetMapping
     public List<GenreDto> getUsers() {
         return genreService.getAll();
